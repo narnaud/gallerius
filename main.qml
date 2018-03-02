@@ -16,6 +16,12 @@ Window {
         visible: _gallery.rootPath.toString() === ""
     }
 
+    Connections {
+        // Ensure that the selection is cleared when changing the path
+        target: _gallery
+        onPathChanged: gridView.currentIndex = -1
+    }
+
     GridView {
         id: gridView
 

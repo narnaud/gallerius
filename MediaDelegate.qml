@@ -14,6 +14,10 @@ Item {
         hoverEnabled: true
         anchors.fill: parent
         onClicked: parent.GridView.view.currentIndex = model.index
+        onDoubleClicked: {
+            if (model.type === Media.Dir)
+                _gallery.setPath("file:///" + model.filePath)
+        }
     }
 
     Rectangle {
