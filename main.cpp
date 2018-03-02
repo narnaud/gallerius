@@ -1,5 +1,7 @@
 #include "constants.h"
+#include "data.h"
 #include "gallery.h"
+#include "gallerymodel.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -16,6 +18,9 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     Gallery gallery;
+    GalleryModel model;
+
+    QObject::connect(&gallery, &Gallery::dataChanged, [&]() { model.setMedia(gallery.media()); });
 
     QSettings settings;
     QUrl savedRootPath = settings.value(Constants::RootPathKey).toUrl();
@@ -23,6 +28,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("_gallery", &gallery);
     engine.rootContext()->setContextProperty("_savedRootPath", savedRootPath);
+    engine.rootContext()->setContextProperty("_model", &model);
 
     qmlRegisterUncreatableType<Media>("Gallerius", 1, 0, "Media",
                                       "You cannot create an instance of Media.");

@@ -99,4 +99,5 @@ void Gallery::loadData()
     data.media = loadMedia(dir);
 
     m_data = std::move(data);
+    emit dataChanged();
 }

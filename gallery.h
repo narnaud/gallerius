@@ -1,26 +1,11 @@
 #ifndef GALLERY_H
 #define GALLERY_H
 
+#include "data.h"
+
 #include <QObject>
 #include <QUrl>
 #include <QVector>
-
-struct Media
-{
-    Q_GADGET
-public:
-    enum Type { Dir, Image, Video, NoType };
-    Q_ENUM(Type);
-
-    QString fileName;
-    QString filePath;
-    Type type = NoType;
-};
-
-struct Data
-{
-    QVector<Media> media;
-};
 
 class Gallery : public QObject
 {

@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>WelcomeScreen.qml</file>
+        <file>MediaDelegate.qml</file>
+        <file>style.js</file>
     </qresource>
 </RCC>

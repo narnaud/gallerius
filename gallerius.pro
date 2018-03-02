@@ -13,11 +13,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += main.cpp \
-    gallery.cpp
+    gallery.cpp \
+    gallerymodel.cpp
 
 HEADERS += \
     constants.h \
     gallery.h \
-    utility.h
+    utility.h \
+    gallerymodel.h \
+    data.h
 
 RESOURCES += qml.qrc
