@@ -1,4 +1,4 @@
-QT += quick
+QT += quick concurrent
 CONFIG += c++1x
 
 # The following define makes your compiler emit warnings if you use
@@ -17,6 +17,7 @@ SOURCES += main.cpp \
 
 HEADERS += \
     constants.h \
-    gallery.h
+    gallery.h \
+    utility.h
 
 RESOURCES += qml.qrc

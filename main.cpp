@@ -24,6 +24,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("_gallery", &gallery);
     engine.rootContext()->setContextProperty("_savedRootPath", savedRootPath);
 
+    qmlRegisterUncreatableType<Media>("Gallerius", 1, 0, "Media",
+                                      "You cannot create an instance of Media.");
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
