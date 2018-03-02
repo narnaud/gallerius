@@ -6,4 +6,9 @@ Window {
     width: 1024
     height: 768
     title: qsTr("Gallerius")
+
+    WelcomeScreen {
+        anchors.fill: parent
+        visible: _gallery.rootPath.toString() === ""
+    }
 }
