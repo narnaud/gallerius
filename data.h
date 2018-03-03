@@ -1,8 +1,8 @@
 #ifndef DATA_H
 #define DATA_H
 
+#include <QImage>
 #include <QObject>
-#include <QPixmap>
 #include <QVector>
 
 struct Media
@@ -15,7 +15,7 @@ public:
     QString fileName;
     QString filePath;
     Type type = NoType;
-    QPixmap thumbnail;
+    QImage thumbnail;
     bool excluded = false;
 };
 

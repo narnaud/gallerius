@@ -89,7 +89,7 @@ static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
         media.type = Media::Dir;
     } else if (Utility::contains(imageSuffix, fileInfo.suffix())) {
         media.type = Media::Image;
-        QPixmap thumbnail(fileInfo.absoluteFilePath());
+        QImage thumbnail(fileInfo.absoluteFilePath());
         media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
                                            Qt::SmoothTransformation);
     } else if (Utility::contains(videoSuffix, fileInfo.suffix())) {

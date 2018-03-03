@@ -1,5 +1,7 @@
 #include "gallerymodel.h"
 
+#include <QPixmap>
+
 GalleryModel::GalleryModel(QObject *parent)
     : QAbstractListModel(parent)
 {
@@ -50,7 +52,7 @@ QHash<int, QByteArray> GalleryModel::roleNames() const
 QPixmap GalleryModel::thumbnail(const QString &id)
 {
     int row = id.split('+').first().toInt();
-    return m_media[row].thumbnail;
+    return QPixmap::fromImage(m_media[row].thumbnail);
 }
 
 void GalleryModel::setMedia(const QVector<Media> &media)
