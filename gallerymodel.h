@@ -15,6 +15,7 @@ public:
         FilePathRole,
         TypeRole,
         ImageRole,
+        ExcludedRole,
     };
 
 public:

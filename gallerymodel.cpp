@@ -29,6 +29,8 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         if (media.type == Media::Image)
             return "image://thumbnail/" + QString::number(index.row()) + "+" + media.fileName;
         break;
+    case ExcludedRole:
+        return media.excluded;
     }
 
     return {};
@@ -41,6 +43,7 @@ QHash<int, QByteArray> GalleryModel::roleNames() const
     result[FilePathRole] = "filePath";
     result[TypeRole] = "type";
     result[ImageRole] = "image";
+    result[ExcludedRole] = "excluded";
     return result;
 }
 

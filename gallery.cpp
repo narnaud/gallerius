@@ -32,6 +32,11 @@ QVector<Media> Gallery::media() const
     return m_data.media;
 }
 
+bool Gallery::isRoot() const
+{
+    return m_rootPath == m_path;
+}
+
 void Gallery::setRootPath(QUrl rootPath)
 {
     if (m_rootPath == rootPath)
@@ -59,7 +64,22 @@ void Gallery::setPath(QUrl path)
     emit pathChanged(m_path);
 }
 
-static Media createMedia(const QFileInfo &fileInfo)
+static QStringList parseNomedia(const QString &path)
+{
+    QFile nomediaFile(path + "/.nomedia");
+    QStringList result;
+    if (nomediaFile.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&nomediaFile);
+        while (!stream.atEnd()) {
+            auto line = stream.readLine().simplified();
+            if (!line.isEmpty())
+                result.append(line);
+        }
+    }
+    return result;
+}
+
+static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
 {
     static std::vector<QString> imageSuffix = {"jpg", "jpeg", "png", "gif"};
     static std::vector<QString> videoSuffix = {"mov", "avi", "mp4", "webm", "ogv", "3gp"};
@@ -80,14 +100,19 @@ static Media createMedia(const QFileInfo &fileInfo)
 
     media.fileName = fileInfo.fileName();
     media.filePath = fileInfo.absoluteFilePath();
+    media.excluded = nomedia.contains(media.fileName);
+
     return media;
 }
 
-static QVector<Media> loadMedia(const QDir &dir)
+static QVector<Media> loadMedia(const QDir &dir, const QStringList &nomedia)
 {
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot, QDir::Name);
 
-    auto result = QtConcurrent::blockingMapped(list.toVector(), createMedia);
+    auto result = QtConcurrent::blockingMapped(
+        list.toVector(), std::function<Media(const QFileInfo &)>([nomedia](const QFileInfo &info) {
+            return createMedia(info, nomedia);
+        }));
     result.erase(std::remove_if(result.begin(), result.end(),
                                 [](const Media &media) { return media.type == Media::NoType; }),
                  result.end());
@@ -100,8 +125,10 @@ void Gallery::loadData()
     if (!dir.exists())
         return;
 
+    QStringList nomedia = parseNomedia(dir.canonicalPath());
+
     Data data;
-    data.media = loadMedia(dir);
+    data.media = loadMedia(dir, nomedia);
 
     m_data = std::move(data);
     emit dataChanged();

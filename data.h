@@ -16,6 +16,7 @@ public:
     QString filePath;
     Type type = NoType;
     QPixmap thumbnail;
+    bool excluded = false;
 };
 
 struct Data

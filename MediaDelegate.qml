@@ -43,4 +43,10 @@ Item {
         color: "#80000000"
         source: image
     }
+
+    CheckBox {
+        x: 5
+        y: 5
+        checked: !model.excluded
+    }
 }
