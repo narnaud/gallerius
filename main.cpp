@@ -2,6 +2,7 @@
 #include "data.h"
 #include "gallery.h"
 #include "gallerymodel.h"
+#include "thumbnailprovider.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
     QUrl savedRootPath = settings.value(Constants::RootPathKey).toUrl();
 
     QQmlApplicationEngine engine;
+    engine.addImageProvider("thumbnail", new ThumbnailProvider(&model));
     engine.rootContext()->setContextProperty("_gallery", &gallery);
     engine.rootContext()->setContextProperty("_savedRootPath", savedRootPath);
     engine.rootContext()->setContextProperty("_model", &model);

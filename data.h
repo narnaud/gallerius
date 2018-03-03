@@ -2,6 +2,7 @@
 #define DATA_H
 
 #include <QObject>
+#include <QPixmap>
 #include <QVector>
 
 struct Media
@@ -14,6 +15,7 @@ public:
     QString fileName;
     QString filePath;
     Type type = NoType;
+    QPixmap thumbnail;
 };
 
 struct Data

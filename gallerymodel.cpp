@@ -24,6 +24,11 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         return media.filePath;
     case TypeRole:
         return media.type;
+    case ImageRole:
+        // We need to make sure the id is unique
+        if (media.type == Media::Image)
+            return "image://thumbnail/" + QString::number(index.row()) + "+" + media.fileName;
+        break;
     }
 
     return {};
@@ -35,7 +40,14 @@ QHash<int, QByteArray> GalleryModel::roleNames() const
     result[FileNameRole] = "fileName";
     result[FilePathRole] = "filePath";
     result[TypeRole] = "type";
+    result[ImageRole] = "image";
     return result;
+}
+
+QPixmap GalleryModel::thumbnail(const QString &id)
+{
+    int row = id.split('+').first().toInt();
+    return m_media[row].thumbnail;
 }
 
 void GalleryModel::setMedia(const QVector<Media> &media)

@@ -14,13 +14,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     gallery.cpp \
-    gallerymodel.cpp
+    gallerymodel.cpp \
+    thumbnailprovider.cpp
 
 HEADERS += \
     constants.h \
     gallery.h \
     utility.h \
     gallerymodel.h \
-    data.h
+    data.h \
+    thumbnailprovider.h
 
 RESOURCES += qml.qrc

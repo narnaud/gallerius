@@ -14,6 +14,7 @@ public:
         FileNameRole = Qt::UserRole,
         FilePathRole,
         TypeRole,
+        ImageRole,
     };
 
 public:
@@ -26,6 +27,8 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     void setMedia(const QVector<Media> &media);
+
+    QPixmap thumbnail(const QString &id);
 
 private:
     QVector<Media> m_media;

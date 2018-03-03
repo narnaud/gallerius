@@ -13,32 +13,31 @@ Item {
         id: mouseArea
         hoverEnabled: true
         anchors.fill: parent
-        onClicked: parent.GridView.view.currentIndex = model.index
-        onDoubleClicked: {
+        onClicked: {
             if (model.type === Media.Dir)
                 _gallery.setPath("file:///" + model.filePath)
         }
     }
 
-    Rectangle {
+    Image {
         id: image
         anchors.centerIn: parent
         width: Style.imageSize
         height: Style.imageSize
-        radius: 20
-
-        color: model.type === Media.Dir ? "red" : "orange"
+        fillMode: Image.PreserveAspectFit
+        source: model.type === Media.Image ? model.image : ""
 
         Text {
             anchors.centerIn: parent
             text: model.fileName
+            visible: model.type !== Media.Image
         }
     }
 
     DropShadow {
         anchors.fill: image
-        horizontalOffset: 3
-        verticalOffset: 3
+        horizontalOffset: mouseArea.pressed ? 6 : 3
+        verticalOffset: mouseArea.pressed ? 6 : 3
         radius: 8.0
         samples: 17
         color: "#80000000"

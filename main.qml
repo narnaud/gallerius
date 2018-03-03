@@ -34,11 +34,6 @@ Window {
 
         focus: _gallery.rootPath.toString() !== ""
 
-        highlight: Rectangle {
-            color: "lightgrey"
-            radius: 5
-        }
-
         ScrollBar.vertical: ScrollBar { id: scrollBar }
     }
 }
