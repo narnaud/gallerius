@@ -39,6 +39,16 @@ bool Gallery::isRoot() const
     return m_rootPath == m_path;
 }
 
+int Gallery::mediaCount() const
+{
+    return m_data.media.size();
+}
+
+const Media &Gallery::media(int index) const
+{
+    return m_data.media.value(index);
+}
+
 void Gallery::setRootPath(QUrl rootPath)
 {
     if (m_rootPath == rootPath)
@@ -147,6 +157,7 @@ void Gallery::loadData()
         data.media = loadMedia(dir, nomedia, tempDir.isValid() ? tempDir.path() : "");
     }
 
+    emit dataAboutToChange();
     m_data = std::move(data);
     emit dataChanged();
 }

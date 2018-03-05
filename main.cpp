@@ -19,9 +19,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     Gallery gallery;
-    GalleryModel model;
-
-    QObject::connect(&gallery, &Gallery::dataChanged, [&]() { model.setMedia(gallery.media()); });
+    GalleryModel model(&gallery);
 
     QSettings settings;
     QUrl savedRootPath = settings.value(Constants::RootPathKey).toUrl();

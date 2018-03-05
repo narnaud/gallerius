@@ -1,9 +1,9 @@
 #ifndef GALLERYMODEL_H
 #define GALLERYMODEL_H
 
-#include "data.h"
-
 #include <QAbstractListModel>
+
+class Gallery;
 
 class GalleryModel : public QAbstractListModel
 {
@@ -19,7 +19,7 @@ public:
     };
 
 public:
-    explicit GalleryModel(QObject *parent = nullptr);
+    explicit GalleryModel(Gallery *gallery = nullptr);
     ~GalleryModel();
 
     int rowCount(const QModelIndex &parent) const override;
@@ -27,12 +27,10 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
-    void setMedia(const QVector<Media> &media);
-
     QPixmap thumbnail(const QString &id);
 
 private:
-    QVector<Media> m_media;
+    Gallery *m_gallery;
 };
 
 #endif // GALLERYMODEL_H

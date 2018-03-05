@@ -1,10 +1,17 @@
 #include "gallerymodel.h"
 
+#include "gallery.h"
+
 #include <QPixmap>
 
-GalleryModel::GalleryModel(QObject *parent)
-    : QAbstractListModel(parent)
+GalleryModel::GalleryModel(Gallery *gallery)
+    : QAbstractListModel(gallery)
+    , m_gallery(gallery)
 {
+    Q_ASSERT(m_gallery);
+
+    connect(m_gallery, &Gallery::dataAboutToChange, this, &GalleryModel::beginResetModel);
+    connect(m_gallery, &Gallery::dataChanged, this, &GalleryModel::endResetModel);
 }
 
 GalleryModel::~GalleryModel() {}
@@ -13,12 +20,12 @@ int GalleryModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
-    return m_media.size();
+    return m_gallery->mediaCount();
 }
 
 QVariant GalleryModel::data(const QModelIndex &index, int role) const
 {
-    const Media &media = m_media.value(index.row());
+    const Media &media = m_gallery->media(index.row());
     switch (role) {
     case FileNameRole:
         return media.fileName;
@@ -52,12 +59,6 @@ QHash<int, QByteArray> GalleryModel::roleNames() const
 QPixmap GalleryModel::thumbnail(const QString &id)
 {
     int row = id.split('+').first().toInt();
-    return QPixmap::fromImage(m_media[row].thumbnail);
-}
-
-void GalleryModel::setMedia(const QVector<Media> &media)
-{
-    beginResetModel();
-    m_media = media;
-    endResetModel();
+    auto thumb = m_gallery->media(row).thumbnail;
+    return QPixmap::fromImage(thumb);
 }

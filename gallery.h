@@ -22,12 +22,16 @@ public:
     QVector<Media> media() const;
     bool isRoot() const;
 
+    int mediaCount() const;
+    const Media &media(int index) const;
+
 signals:
     void rootPathChanged(QUrl rootPath);
     void pathChanged(QUrl path);
-    void dataChanged();
-
     void isRootChanged(bool isRoot);
+
+    void dataAboutToChange();
+    void dataChanged();
 
 public slots:
     void setRootPath(QUrl rootPath);
