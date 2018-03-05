@@ -5,7 +5,9 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QProcess>
 #include <QSettings>
+#include <QTemporaryDir>
 #include <QtConcurrent>
 
 #include <algorithm>
@@ -79,7 +81,8 @@ static QStringList parseNomedia(const QString &path)
     return result;
 }
 
-static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
+static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia,
+                         const QString &tempPath)
 {
     static std::vector<QString> imageSuffix = {"jpg", "jpeg", "png", "gif"};
     static std::vector<QString> videoSuffix = {"mov", "avi", "mp4", "webm", "ogv", "3gp"};
@@ -94,6 +97,15 @@ static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
                                            Qt::SmoothTransformation);
     } else if (Utility::contains(videoSuffix, fileInfo.suffix())) {
         media.type = Media::Video;
+        const QString outName = tempPath + '/' + fileInfo.fileName() + ".jpg";
+        int code = QProcess::execute(QString("ffmpeg -loglevel quiet -i \"%1\" -vframes 1 \"%2\"")
+                                         .arg(fileInfo.absoluteFilePath())
+                                         .arg(QDir::toNativeSeparators(outName)));
+        if (code == 0) {
+            QImage thumbnail(outName);
+            media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
+                                               Qt::SmoothTransformation);
+        }
     } else {
         return media;
     }
@@ -105,13 +117,15 @@ static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
     return media;
 }
 
-static QVector<Media> loadMedia(const QDir &dir, const QStringList &nomedia)
+static QVector<Media> loadMedia(const QDir &dir, const QStringList &nomedia,
+                                const QString &tempPath)
 {
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot, QDir::Name);
 
     auto result = QtConcurrent::blockingMapped(
-        list.toVector(), std::function<Media(const QFileInfo &)>([nomedia](const QFileInfo &info) {
-            return createMedia(info, nomedia);
+        list.toVector(),
+        std::function<Media(const QFileInfo &)>([nomedia, tempPath](const QFileInfo &info) {
+            return createMedia(info, nomedia, tempPath);
         }));
     result.erase(std::remove_if(result.begin(), result.end(),
                                 [](const Media &media) { return media.type == Media::NoType; }),
@@ -128,7 +142,10 @@ void Gallery::loadData()
     QStringList nomedia = parseNomedia(dir.canonicalPath());
 
     Data data;
-    data.media = loadMedia(dir, nomedia);
+    {
+        QTemporaryDir tempDir;
+        data.media = loadMedia(dir, nomedia, tempDir.isValid() ? tempDir.path() : "");
+    }
 
     m_data = std::move(data);
     emit dataChanged();

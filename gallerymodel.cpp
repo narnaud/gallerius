@@ -28,7 +28,7 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         return media.type;
     case ImageRole:
         // We need to make sure the id is unique
-        if (media.type == Media::Image)
+        if (media.type != Media::Dir)
             return "image://thumbnail/" + QString::number(index.row()) + "+" + media.fileName;
         break;
     case ExcludedRole:

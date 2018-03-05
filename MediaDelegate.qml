@@ -25,7 +25,7 @@ Item {
         width: Style.imageSize
         height: Style.imageSize
         fillMode: Image.PreserveAspectFit
-        source: model.type === Media.Image ? model.image : ""
+        source: model.type === Media.Dir ? "" : model.image
 
         Text {
             anchors.centerIn: parent
