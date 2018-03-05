@@ -36,4 +36,14 @@ Window {
 
         ScrollBar.vertical: ScrollBar { id: scrollBar }
     }
+    ProgressBar {
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
+        to: _gallery.mediaCount
+        value: _gallery.progressValue
+        visible: to != value
+    }
 }

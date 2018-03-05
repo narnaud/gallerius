@@ -5,9 +5,9 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QFutureWatcher>
 #include <QProcess>
 #include <QSettings>
-#include <QTemporaryDir>
 #include <QtConcurrent>
 
 #include <algorithm>
@@ -16,7 +16,11 @@ static constexpr int ThumbnailSize = 200;
 
 Gallery::Gallery(QObject *parent)
     : QObject(parent)
+    , m_watcher(new QFutureWatcher<void>(this))
 {
+    connect(m_watcher, &QFutureWatcher<void>::progressValueChanged, this,
+            &Gallery::progressValueChanged);
+    connect(m_watcher, &QFutureWatcher<void>::finished, this, &Gallery::thumbnailsDone);
 }
 
 QUrl Gallery::rootPath() const
@@ -29,11 +33,6 @@ QUrl Gallery::path() const
     return m_path;
 }
 
-QVector<Media> Gallery::media() const
-{
-    return m_data.media;
-}
-
 bool Gallery::isRoot() const
 {
     return m_rootPath == m_path;
@@ -41,12 +40,20 @@ bool Gallery::isRoot() const
 
 int Gallery::mediaCount() const
 {
-    return m_data.media.size();
+    return static_cast<int>(m_data.media.size());
 }
 
 const Media &Gallery::media(int index) const
 {
-    return m_data.media.value(index);
+    return m_data.media[index];
+}
+
+int Gallery::progressValue() const
+{
+    if (m_watcher->isRunning())
+        return m_watcher->progressValue();
+    else
+        return static_cast<int>(m_data.media.size());
 }
 
 void Gallery::setRootPath(QUrl rootPath)
@@ -91,8 +98,7 @@ static QStringList parseNomedia(const QString &path)
     return result;
 }
 
-static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia,
-                         const QString &tempPath)
+static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
 {
     static std::vector<QString> imageSuffix = {"jpg", "jpeg", "png", "gif"};
     static std::vector<QString> videoSuffix = {"mov", "avi", "mp4", "webm", "ogv", "3gp"};
@@ -102,20 +108,8 @@ static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia,
         media.type = Media::Dir;
     } else if (Utility::contains(imageSuffix, fileInfo.suffix())) {
         media.type = Media::Image;
-        QImage thumbnail(fileInfo.absoluteFilePath());
-        media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
-                                           Qt::SmoothTransformation);
     } else if (Utility::contains(videoSuffix, fileInfo.suffix())) {
         media.type = Media::Video;
-        const QString outName = tempPath + '/' + fileInfo.fileName() + ".jpg";
-        int code = QProcess::execute(QString("ffmpeg -loglevel quiet -i \"%1\" -vframes 1 \"%2\"")
-                                         .arg(fileInfo.absoluteFilePath())
-                                         .arg(QDir::toNativeSeparators(outName)));
-        if (code == 0) {
-            QImage thumbnail(outName);
-            media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
-                                               Qt::SmoothTransformation);
-        }
     } else {
         return media;
     }
@@ -127,20 +121,38 @@ static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia,
     return media;
 }
 
-static QVector<Media> loadMedia(const QDir &dir, const QStringList &nomedia,
-                                const QString &tempPath)
+static std::vector<Media> loadMedia(const QDir &dir, const QStringList &nomedia)
 {
     auto list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot, QDir::Name);
 
-    auto result = QtConcurrent::blockingMapped(
-        list.toVector(),
-        std::function<Media(const QFileInfo &)>([nomedia, tempPath](const QFileInfo &info) {
-            return createMedia(info, nomedia, tempPath);
-        }));
-    result.erase(std::remove_if(result.begin(), result.end(),
-                                [](const Media &media) { return media.type == Media::NoType; }),
-                 result.end());
+    std::vector<Media> result;
+    result.reserve(list.size());
+    for (const auto &info : list) {
+        auto media = createMedia(info, nomedia);
+        if (media.type != Media::NoType)
+            result.emplace_back(std::move(media));
+    }
+
     return result;
+}
+
+static void computeThumbnail(Media &media, const QString &tempPath)
+{
+    if (media.type == Media::Image) {
+        QImage thumbnail(media.filePath);
+        media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
+                                           Qt::SmoothTransformation);
+    } else if (media.type == Media::Video) {
+        const QString outName = tempPath + '/' + media.fileName + ".jpg";
+        int code = QProcess::execute(QString("ffmpeg -loglevel quiet -i \"%1\" -vframes 1 \"%2\"")
+                                         .arg(media.filePath)
+                                         .arg(QDir::toNativeSeparators(outName)));
+        if (code == 0) {
+            QImage thumbnail(outName);
+            media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
+                                               Qt::SmoothTransformation);
+        }
+    }
 }
 
 void Gallery::loadData()
@@ -149,13 +161,16 @@ void Gallery::loadData()
     if (!dir.exists())
         return;
 
-    QStringList nomedia = parseNomedia(dir.canonicalPath());
+    m_watcher->cancel();
 
     Data data;
-    {
-        QTemporaryDir tempDir;
-        data.media = loadMedia(dir, nomedia, tempDir.isValid() ? tempDir.path() : "");
-    }
+    data.media = loadMedia(dir, parseNomedia(dir.canonicalPath()));
+
+    const QString &tempPath = m_tempDirectory.isValid() ? m_tempDirectory.path() : "";
+    m_watcher->setFuture(
+        QtConcurrent::map(data.media, std::function<void(Media &)>([tempPath](Media &media) {
+                              computeThumbnail(media, tempPath);
+                          })));
 
     emit dataAboutToChange();
     m_data = std::move(data);

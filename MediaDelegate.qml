@@ -25,12 +25,12 @@ Item {
         width: Style.imageSize
         height: Style.imageSize
         fillMode: Image.PreserveAspectFit
-        source: model.type === Media.Dir ? "" : model.image
+        source: model.thumbnail
 
         Text {
             anchors.centerIn: parent
             text: model.fileName
-            visible: model.type !== Media.Image
+            visible: model.thumbnail === ""
         }
     }
 

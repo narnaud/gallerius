@@ -14,7 +14,7 @@ public:
         FileNameRole = Qt::UserRole,
         FilePathRole,
         TypeRole,
-        ImageRole,
+        ThumbnailRole,
         ExcludedRole,
     };
 

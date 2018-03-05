@@ -3,7 +3,8 @@
 
 #include <QImage>
 #include <QObject>
-#include <QVector>
+
+#include <vector>
 
 struct Media
 {
@@ -21,7 +22,7 @@ public:
 
 struct Data
 {
-    QVector<Media> media;
+    std::vector<Media> media;
 };
 
 #endif // DATA_H
