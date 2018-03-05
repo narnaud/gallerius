@@ -32,13 +32,19 @@ Item {
         width: Style.imageSize
         height: Style.imageSize
         fillMode: Image.PreserveAspectFit
-        source: model.thumbnail
+        source: model.type === Media.Dir ? "qrc:///assets/folder.png" : model.thumbnail
         opacity: model.excluded ? (mouseArea.containsMouse ? 0.75 : 0.25) : 1.0
 
         Text {
             anchors.centerIn: parent
+            width: parent.width
             text: model.fileName
+            elide: Text.ElideLeft
             visible: model.thumbnail === ""
+            color: model.type === Media.Dir ? "white" : "grey"
+            font.bold: true
+            font.pixelSize: parent.width / 15
+            horizontalAlignment: Qt.AlignHCenter
         }
     }
 
@@ -53,10 +59,14 @@ Item {
         visible: !model.excluded
     }
 
-    CheckBox {
-        x: 5
-        y: 5
-        checked: !model.excluded
+    Image {
+        anchors {
+            right: parent.right
+            top: parent.top
+            margins: 5
+        }
         visible: mouseArea.containsMouse
+
+        source: model.excluded ? "qrc:///assets/eye-slash.png" : "qrc:///assets/eye.png"
     }
 }

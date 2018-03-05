@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/assets">
+        <file>eye.png</file>
+        <file>eye-slash.png</file>
+        <file>folder.png</file>
+    </qresource>
+</RCC>

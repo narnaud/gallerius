@@ -25,4 +25,5 @@ HEADERS += \
     data.h \
     thumbnailprovider.h
 
-RESOURCES += qml.qrc
+RESOURCES += qml.qrc \
+    assets/assets.qrc
