@@ -19,6 +19,13 @@ Item {
         }
     }
 
+    Rectangle {
+        anchors.fill: parent
+        radius: 10
+        color: "lightgrey"
+        visible: mouseArea.containsMouse
+    }
+
     Image {
         id: image
         anchors.centerIn: parent
@@ -26,6 +33,7 @@ Item {
         height: Style.imageSize
         fillMode: Image.PreserveAspectFit
         source: model.thumbnail
+        opacity: model.excluded ? (mouseArea.containsMouse ? 0.75 : 0.25) : 1.0
 
         Text {
             anchors.centerIn: parent
@@ -42,11 +50,13 @@ Item {
         samples: 17
         color: "#80000000"
         source: image
+        visible: !model.excluded
     }
 
     CheckBox {
         x: 5
         y: 5
         checked: !model.excluded
+        visible: mouseArea.containsMouse
     }
 }
