@@ -18,6 +18,8 @@ ApplicationWindow {
         Component.onCompleted: open()
     }
 
+    header: BreadCrumb {}
+
     Connections {
         // Ensure that the selection is cleared when changing the path
         target: _gallery

@@ -38,6 +38,11 @@ bool Gallery::isRoot() const
     return m_rootPath == m_path;
 }
 
+QStringList Gallery::pathList() const
+{
+    return m_pathList;
+}
+
 int Gallery::mediaCount() const
 {
     return static_cast<int>(m_data.media.size());
@@ -79,6 +84,16 @@ void Gallery::setPath(QUrl path)
         return;
 
     m_path = path;
+
+    // Compute the path list
+    if (m_path == m_rootPath) {
+        m_pathList.clear();
+    } else {
+        const QString rootString = m_rootPath.toString(QUrl::PreferLocalFile);
+        const QString pathString = m_path.toString(QUrl::PreferLocalFile);
+        m_pathList = pathString.mid(rootString.length() + 1).split('/');
+    }
+
     loadData();
     emit pathChanged(m_path);
 }

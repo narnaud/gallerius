@@ -3,5 +3,7 @@
         <file>eye.png</file>
         <file>eye-slash.png</file>
         <file>folder.png</file>
+        <file>home.png</file>
+        <file>angle-right.png</file>
     </qresource>
 </RCC>

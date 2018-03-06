@@ -4,5 +4,6 @@
         <file>WelcomeScreen.qml</file>
         <file>MediaDelegate.qml</file>
         <file>style.js</file>
+        <file>BreadCrumb.qml</file>
     </qresource>
 </RCC>

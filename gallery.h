@@ -4,6 +4,7 @@
 #include "data.h"
 
 #include <QObject>
+#include <QStringList>
 #include <QTemporaryDir>
 #include <QUrl>
 #include <QVector>
@@ -19,6 +20,7 @@ class Gallery : public QObject
     Q_PROPERTY(bool isRoot READ isRoot NOTIFY isRootChanged)
     Q_PROPERTY(int mediaCount READ mediaCount NOTIFY dataChanged)
     Q_PROPERTY(int progressValue READ progressValue NOTIFY progressValueChanged)
+    Q_PROPERTY(QStringList pathList READ pathList NOTIFY pathChanged)
 
 public:
     explicit Gallery(QObject *parent = nullptr);
@@ -26,6 +28,7 @@ public:
     QUrl rootPath() const;
     QUrl path() const;
     bool isRoot() const;
+    QStringList pathList() const;
 
     int mediaCount() const;
     const Media &media(int index) const;
@@ -56,6 +59,7 @@ private:
     QUrl m_path;
     QFutureWatcher<void> *m_watcher;
     QTemporaryDir m_tempDirectory;
+    QStringList m_pathList;
 };
 
 #endif // GALLERY_H
