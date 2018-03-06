@@ -4,16 +4,18 @@ import QtQuick.Controls 2.3
 
 import "style.js" as Style
 
-Window {
+ApplicationWindow {
     visible: true
     width: 1024
     height: 768
     title: qsTr("Gallerius")
 
     WelcomeScreen {
-        anchors.fill: parent
-        z: 100
-        visible: _gallery.rootPath.toString() === ""
+        x: width / 2
+        y: height / 2
+        width: parent.width / 2
+        height: parent.height / 2
+        Component.onCompleted: open()
     }
 
     Connections {
@@ -36,12 +38,8 @@ Window {
 
         ScrollBar.vertical: ScrollBar { id: scrollBar }
     }
-    ProgressBar {
-        anchors {
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
+
+    footer: ProgressBar {
         to: _gallery.mediaCount
         value: _gallery.progressValue
         visible: to != value
