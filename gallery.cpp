@@ -8,6 +8,8 @@
 #include <QFutureWatcher>
 #include <QProcess>
 #include <QSettings>
+#include <QTextStream>
+#include <Qfile>
 #include <QtConcurrent>
 
 #include <algorithm>
@@ -21,6 +23,11 @@ Gallery::Gallery(QObject *parent)
     connect(m_watcher, &QFutureWatcher<void>::progressValueChanged, this,
             &Gallery::progressValueChanged);
     connect(m_watcher, &QFutureWatcher<void>::finished, this, &Gallery::thumbnailsDone);
+}
+
+Gallery::~Gallery()
+{
+    writeData();
 }
 
 QUrl Gallery::rootPath() const
@@ -83,6 +90,7 @@ void Gallery::setPath(QUrl path)
     if (m_path == path)
         return;
 
+    writeData();
     m_path = path;
 
     // Compute the path list
@@ -96,6 +104,16 @@ void Gallery::setPath(QUrl path)
 
     loadData();
     emit pathChanged(m_path);
+}
+
+void Gallery::toggleExcluded(int index)
+{
+    Media &media = m_data.media[index];
+    media.excluded = !media.excluded;
+
+    m_hasChanged = true;
+
+    emit mediaChanged(index);
 }
 
 static QStringList parseNomedia(const QString &path)
@@ -189,5 +207,29 @@ void Gallery::loadData()
 
     emit dataAboutToChange();
     m_data = std::move(data);
+    m_hasChanged = false;
     emit dataChanged();
+}
+
+void Gallery::writeData()
+{
+    if (!m_hasChanged)
+        return;
+
+    QStringList list;
+    for (const auto &media : m_data.media) {
+        if (media.excluded)
+            list.append(media.fileName);
+    }
+
+    if (list.isEmpty()) {
+        // Remove existing nomedia file if any
+        QFile::remove(m_path.toLocalFile() + "/.nomedia");
+    } else {
+        QFile nomediaFile(m_path.toLocalFile() + "/.nomedia");
+        if (nomediaFile.open(QIODevice::WriteOnly)) {
+            QTextStream stream(&nomediaFile);
+            stream << list.join('\n');
+        }
+    }
 }

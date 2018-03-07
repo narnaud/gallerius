@@ -68,5 +68,13 @@ Item {
         visible: mouseArea.containsMouse
 
         source: model.excluded ? "qrc:///assets/eye-slash.png" : "qrc:///assets/eye.png"
+
+        MouseArea {
+            anchors.centerIn: parent
+            height: 30
+            width: 30
+            cursorShape: Qt.PointingHandCursor
+            onClicked: _gallery.toggleExcluded(model.index)
+        }
     }
 }

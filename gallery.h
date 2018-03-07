@@ -24,6 +24,7 @@ class Gallery : public QObject
 
 public:
     explicit Gallery(QObject *parent = nullptr);
+    ~Gallery();
 
     QUrl rootPath() const;
     QUrl path() const;
@@ -46,12 +47,17 @@ signals:
     void progressValueChanged(int value);
     void thumbnailsDone();
 
+    void mediaChanged(int index);
+
 public slots:
     void setRootPath(QUrl rootPath);
     void setPath(QUrl path);
 
+    void toggleExcluded(int index);
+
 private:
     void loadData();
+    void writeData();
 
 private:
     QUrl m_rootPath;
@@ -60,6 +66,7 @@ private:
     QFutureWatcher<void> *m_watcher;
     QTemporaryDir m_tempDirectory;
     QStringList m_pathList;
+    bool m_hasChanged = false;
 };
 
 #endif // GALLERY_H

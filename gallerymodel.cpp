@@ -15,6 +15,8 @@ GalleryModel::GalleryModel(Gallery *gallery)
     connect(m_gallery, &Gallery::thumbnailsDone, this, [this]() {
         emit dataChanged(index(0), index(m_gallery->mediaCount() - 1), {ThumbnailRole});
     });
+    connect(m_gallery, &Gallery::mediaChanged, this,
+            [this](int row) { emit dataChanged(index(row), index(row), {ExcludedRole}); });
 }
 
 GalleryModel::~GalleryModel() {}
