@@ -106,10 +106,10 @@ void Gallery::setPath(QUrl path)
     emit pathChanged(m_path);
 }
 
-void Gallery::toggleExcluded(int index)
+void Gallery::toggleMediaFilter(int index)
 {
     Media &media = m_data.media[index];
-    media.excluded = !media.excluded;
+    media.filter = !media.filter;
 
     m_hasChanged = true;
 
@@ -149,7 +149,7 @@ static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
 
     media.fileName = fileInfo.fileName();
     media.filePath = fileInfo.absoluteFilePath();
-    media.excluded = nomedia.contains(media.fileName);
+    media.filter = nomedia.contains(media.fileName);
 
     return media;
 }
@@ -218,7 +218,7 @@ void Gallery::writeData()
 
     QStringList list;
     for (const auto &media : m_data.media) {
-        if (media.excluded)
+        if (media.filter)
             list.append(media.fileName);
     }
 

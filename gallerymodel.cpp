@@ -16,7 +16,7 @@ GalleryModel::GalleryModel(Gallery *gallery)
         emit dataChanged(index(0), index(m_gallery->mediaCount() - 1), {ThumbnailRole});
     });
     connect(m_gallery, &Gallery::mediaChanged, this,
-            [this](int row) { emit dataChanged(index(row), index(row), {ExcludedRole}); });
+            [this](int row) { emit dataChanged(index(row), index(row), {FilterRole}); });
 }
 
 GalleryModel::~GalleryModel() {}
@@ -43,8 +43,8 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         if (!media.thumbnail.isNull())
             return "image://thumbnail/" + QString::number(index.row()) + "+" + media.fileName;
         return "";
-    case ExcludedRole:
-        return media.excluded;
+    case FilterRole:
+        return media.filter;
     }
 
     return {};
@@ -57,7 +57,7 @@ QHash<int, QByteArray> GalleryModel::roleNames() const
     result[FilePathRole] = "filePath";
     result[TypeRole] = "type";
     result[ThumbnailRole] = "thumbnail";
-    result[ExcludedRole] = "excluded";
+    result[FilterRole] = "filter";
     return result;
 }
 

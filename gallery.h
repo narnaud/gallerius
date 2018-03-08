@@ -53,7 +53,7 @@ public slots:
     void setRootPath(QUrl rootPath);
     void setPath(QUrl path);
 
-    void toggleExcluded(int index);
+    void toggleMediaFilter(int index);
 
 private:
     void loadData();

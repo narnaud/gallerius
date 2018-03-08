@@ -6,23 +6,23 @@
 class GalleryFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
-    Q_PROPERTY(bool showAll READ isAllVisible WRITE showAll NOTIFY showAllChanged)
+    Q_PROPERTY(bool filter READ filter WRITE setFilter NOTIFY filterChanged)
 
 public:
     GalleryFilterProxyModel(QObject *parent = nullptr);
 
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 
-    bool isAllVisible() const;
+    bool filter() const;
 
 public slots:
-    void showAll(bool showAll);
+    void setFilter(bool setFilter);
 
 signals:
-    void showAllChanged(bool showAll);
+    void filterChanged(bool setFilter);
 
 private:
-    bool m_showAll = true;
+    bool m_filter = false;
 };
 
 #endif // GALLERYFILTERPROXYMODEL_H

@@ -12,24 +12,24 @@ bool GalleryFilterProxyModel::filterAcceptsRow(int source_row,
 {
     Q_UNUSED(source_row);
 
-    if (m_showAll)
+    if (!m_filter)
         return true;
 
     auto index = sourceModel()->index(source_row, 0, source_parent);
-    return !index.data(GalleryModel::ExcludedRole).toBool();
+    return !index.data(GalleryModel::FilterRole).toBool();
 }
 
-bool GalleryFilterProxyModel::isAllVisible() const
+bool GalleryFilterProxyModel::filter() const
 {
-    return m_showAll;
+    return m_filter;
 }
 
-void GalleryFilterProxyModel::showAll(bool showAll)
+void GalleryFilterProxyModel::setFilter(bool showAll)
 {
-    if (m_showAll == showAll)
+    if (m_filter == showAll)
         return;
 
-    m_showAll = showAll;
-    emit showAllChanged(m_showAll);
+    m_filter = showAll;
+    emit filterChanged(m_filter);
     invalidateFilter();
 }

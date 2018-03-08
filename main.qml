@@ -21,14 +21,14 @@ ApplicationWindow {
     header: Rectangle {
         height: childrenRect.height
         color: "white"
-        BreadCrumb {}
 
+        BreadCrumb {}
         RoundButton {
             anchors.right: parent.right
             icon.source: "qrc:///assets/filter.png"
-//            flat: true
             checkable: true
-            onToggled: _model.showAll = !checked
+            checked: _model.filter
+            onToggled: _model.filter = checked
 
         }
     }
@@ -48,6 +48,8 @@ ApplicationWindow {
 
         cellWidth: Style.imageSize + Style.margin
         cellHeight: Style.imageSize + Style.margin
+
+        snapMode: GridView.SnapToRow
 
         focus: _gallery.rootPath.toString() !== ""
 

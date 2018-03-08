@@ -8,7 +8,6 @@ Row {
         RoundButton {
             id: homeButton
             icon.source: "qrc:///assets/home.png"
-//            flat: true
             onClicked: _gallery.path = _gallery.rootPath
         }
         Image {
@@ -28,7 +27,6 @@ Row {
             RoundButton {
                 id: button
                 text: modelData
-//                flat: true
                 font.bold: true
                 font.pixelSize: 16
                 onClicked: {

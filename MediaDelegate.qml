@@ -33,7 +33,7 @@ Item {
         height: Style.imageSize
         fillMode: Image.PreserveAspectFit
         source: model.type === Media.Dir ? "qrc:///assets/folder.png" : model.thumbnail
-        opacity: model.excluded ? (mouseArea.containsMouse ? 0.75 : 0.25) : 1.0
+        opacity: model.filter ? (mouseArea.containsMouse ? 0.75 : 0.25) : 1.0
 
         Text {
             anchors.centerIn: parent
@@ -56,7 +56,7 @@ Item {
         samples: 17
         color: "#80000000"
         source: image
-        visible: !model.excluded
+        visible: !model.filter
     }
 
     Image {
@@ -67,14 +67,14 @@ Item {
         }
         visible: mouseArea.containsMouse
 
-        source: model.excluded ? "qrc:///assets/eye-slash.png" : "qrc:///assets/eye.png"
+        source: model.filter ? "qrc:///assets/eye-slash.png" : "qrc:///assets/eye.png"
 
         MouseArea {
             anchors.centerIn: parent
             height: 30
             width: 30
             cursorShape: Qt.PointingHandCursor
-            onClicked: _gallery.toggleExcluded(model.index)
+            onClicked: _gallery.toggleMediaFilter(model.index)
         }
     }
 }
