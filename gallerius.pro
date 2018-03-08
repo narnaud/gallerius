@@ -15,7 +15,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp \
     gallery.cpp \
     gallerymodel.cpp \
-    thumbnailprovider.cpp
+    thumbnailprovider.cpp \
+    galleryfilterproxymodel.cpp
 
 HEADERS += \
     constants.h \
@@ -23,7 +24,8 @@ HEADERS += \
     utility.h \
     gallerymodel.h \
     data.h \
-    thumbnailprovider.h
+    thumbnailprovider.h \
+    galleryfilterproxymodel.h
 
 RESOURCES += qml.qrc \
     assets/assets.qrc

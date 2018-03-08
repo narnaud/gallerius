@@ -18,7 +18,20 @@ ApplicationWindow {
         Component.onCompleted: open()
     }
 
-    header: BreadCrumb {}
+    header: Rectangle {
+        height: childrenRect.height
+        color: "white"
+        BreadCrumb {}
+
+        RoundButton {
+            anchors.right: parent.right
+            icon.source: "qrc:///assets/filter.png"
+//            flat: true
+            checkable: true
+            onToggled: _model.showAll = !checked
+
+        }
+    }
 
     Connections {
         // Ensure that the selection is cleared when changing the path
