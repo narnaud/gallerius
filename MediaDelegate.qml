@@ -1,5 +1,4 @@
 import QtQuick 2.10
-import QtGraphicalEffects 1.0
 import QtQuick.Controls 2.2
 import Gallerius 1.0
 
@@ -46,17 +45,6 @@ Item {
             font.pixelSize: parent.width / 15
             horizontalAlignment: Qt.AlignHCenter
         }
-    }
-
-    DropShadow {
-        anchors.fill: image
-        horizontalOffset: mouseArea.pressed ? 6 : 3
-        verticalOffset: mouseArea.pressed ? 6 : 3
-        radius: 8.0
-        samples: 17
-        color: "#80000000"
-        source: image
-        visible: !model.filter
     }
 
     Image {
