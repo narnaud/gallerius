@@ -2,8 +2,10 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>WelcomeScreen.qml</file>
-        <file>MediaDelegate.qml</file>
+        <file>GalleryDelegate.qml</file>
         <file>style.js</file>
         <file>BreadCrumb.qml</file>
+        <file>MediaViewer.qml</file>
+        <file>MediaDelegate.qml</file>
     </qresource>
 </RCC>

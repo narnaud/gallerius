@@ -3,6 +3,7 @@
 #include "gallery.h"
 
 #include <QPixmap>
+#include <QUrl>
 
 GalleryModel::GalleryModel(Gallery *gallery)
     : QAbstractListModel(gallery)
@@ -35,7 +36,7 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
     case FileNameRole:
         return media.fileName;
     case FilePathRole:
-        return media.filePath;
+        return QUrl::fromLocalFile(media.filePath);
     case TypeRole:
         return media.type;
     case ThumbnailRole:

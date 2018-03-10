@@ -10,8 +10,6 @@ GalleryFilterProxyModel::GalleryFilterProxyModel(QObject *parent)
 bool GalleryFilterProxyModel::filterAcceptsRow(int source_row,
                                                const QModelIndex &source_parent) const
 {
-    Q_UNUSED(source_row);
-
     if (!m_filter)
         return true;
 

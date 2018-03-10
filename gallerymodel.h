@@ -1,6 +1,8 @@
 #ifndef GALLERYMODEL_H
 #define GALLERYMODEL_H
 
+#include "data.h"
+
 #include <QAbstractListModel>
 
 class Gallery;

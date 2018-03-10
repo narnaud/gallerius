@@ -6,8 +6,8 @@ import "style.js" as Style
 
 ApplicationWindow {
     visible: true
-    width: 1024
-    height: 768
+    width: 1280
+    height: 920
     title: qsTr("Gallerius")
 
     WelcomeScreen {
@@ -44,16 +44,28 @@ ApplicationWindow {
 
         anchors.fill: parent
         model: _model
-        delegate: MediaDelegate {}
+        delegate: GalleryDelegate {
+            onMediaClicked: {
+                mediaViewer.currentIndex = _mediaModel.mapRowFromSource(index)
+                mediaViewer.visible = true
+            }
+        }
 
         cellWidth: Style.imageSize + Style.margin
         cellHeight: Style.imageSize + Style.margin
 
         snapMode: GridView.SnapToRow
 
-        focus: _gallery.rootPath.toString() !== ""
+        focus: !mediaViewer.visible
 
         ScrollBar.vertical: ScrollBar { id: scrollBar }
+    }
+
+    MediaViewer {
+        id: mediaViewer
+        anchors.fill: parent
+        visible: false
+        focus: visible
     }
 
     footer: ProgressBar {

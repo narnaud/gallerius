@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     gallery.cpp \
     gallerymodel.cpp \
     thumbnailprovider.cpp \
-    galleryfilterproxymodel.cpp
+    galleryfilterproxymodel.cpp \
+    mediaproxymodel.cpp
 
 HEADERS += \
     constants.h \
@@ -25,7 +26,8 @@ HEADERS += \
     gallerymodel.h \
     data.h \
     thumbnailprovider.h \
-    galleryfilterproxymodel.h
+    galleryfilterproxymodel.h \
+    mediaproxymodel.h
 
 RESOURCES += qml.qrc \
     assets/assets.qrc
