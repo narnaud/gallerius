@@ -4,7 +4,7 @@ import QtQuick.Controls 2.3
 
 import "style.js" as Style
 
-ApplicationWindow {
+Window {
     visible: true
     width: 1280
     height: 920
@@ -18,9 +18,12 @@ ApplicationWindow {
         Component.onCompleted: open()
     }
 
-    header: Rectangle {
+    Item {
+        id: header
+        anchors.top: parent.top
+        width: parent.width
         height: childrenRect.height
-        color: "white"
+        clip: true
 
         BreadCrumb {}
         RoundButton {
@@ -33,16 +36,12 @@ ApplicationWindow {
         }
     }
 
-    Connections {
-        // Ensure that the selection is cleared when changing the path
-        target: _gallery
-        onPathChanged: gridView.currentIndex = -1
-    }
-
     GridView {
         id: gridView
+        anchors.top: header.bottom
+        anchors.bottom: footer.top
+        width: parent.width
 
-        anchors.fill: parent
         model: _model
         delegate: GalleryDelegate {
             onMediaClicked: {
@@ -53,24 +52,37 @@ ApplicationWindow {
 
         cellWidth: Style.imageSize + Style.margin
         cellHeight: Style.imageSize + Style.margin
-
         snapMode: GridView.SnapToRow
 
         focus: !mediaViewer.visible
 
         ScrollBar.vertical: ScrollBar { id: scrollBar }
+
+        Connections {
+            // Ensure that the selection is cleared when changing the path
+            target: _gallery
+            onPathChanged: gridView.currentIndex = -1
+        }
     }
 
     MediaViewer {
         id: mediaViewer
         anchors.fill: parent
-        visible: false
         focus: visible
+        visible: false
     }
 
-    footer: ProgressBar {
-        to: _gallery.mediaCount
-        value: _gallery.progressValue
-        visible: to != value
+    Item {
+        id: footer
+        anchors.bottom: parent.bottom
+        width: parent.width
+        height: childrenRect.height
+        ProgressBar {
+            width: parent.width
+            to: _gallery.mediaCount
+            value: _gallery.progressValue
+            visible: to != value
+        }
     }
+
 }

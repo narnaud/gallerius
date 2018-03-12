@@ -1,18 +1,33 @@
 import QtQuick 2.10
 import QtQuick.Controls 2.3
 
-ListView {
-    id: view
-    anchors.fill: parent
-    focus: true
-    orientation: ListView.Horizontal
+FocusScope {
+    property alias currentIndex: view.currentIndex
 
-    model: _mediaModel
-    delegate: MediaDelegate {
-        onClicked: view.visible = false
+    Rectangle {
+        anchors.fill: parent
+        color: view.currentItem.filter ? "white" : "black"
+        opacity: 0.9
     }
 
-    highlightMoveDuration: 0
-    highlightRangeMode: ListView.StrictlyEnforceRange
-    snapMode: ListView.SnapOneItem
+    MouseArea {
+        anchors.fill: parent
+        onClicked: parent.visible = false
+    }
+
+    ListView {
+        id: view
+        anchors.fill: parent
+        anchors.margins: 50
+        clip: true
+
+        focus: true
+        model: _mediaModel
+        delegate: MediaDelegate {}
+
+        orientation: ListView.Horizontal
+        highlightMoveDuration: 0
+        highlightRangeMode: ListView.StrictlyEnforceRange
+        snapMode: ListView.SnapOneItem
+    }
 }

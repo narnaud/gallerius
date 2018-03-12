@@ -6,18 +6,7 @@ Item {
     width: ListView.view.width
     height: ListView.view.height
 
-    signal clicked()
-
-    Rectangle {
-        anchors.fill: parent
-        color: model.filter ? "white" : "black"
-        opacity: 0.9
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: parent.clicked()
-    }
+    property bool filter: model.filter
 
     Component {
         id: imageComponent
