@@ -8,7 +8,9 @@ ListView {
     orientation: ListView.Horizontal
 
     model: _mediaModel
-    delegate: MediaDelegate {}
+    delegate: MediaDelegate {
+        onClicked: view.visible = false
+    }
 
     highlightMoveDuration: 0
     highlightRangeMode: ListView.StrictlyEnforceRange

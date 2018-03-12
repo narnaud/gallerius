@@ -195,6 +195,7 @@ void Gallery::loadData()
         return;
 
     m_watcher->cancel();
+    m_watcher->waitForFinished();
 
     Data data;
     data.media = loadMedia(dir, parseNomedia(dir.canonicalPath()));

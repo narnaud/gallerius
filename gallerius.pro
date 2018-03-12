@@ -1,4 +1,4 @@
-QT += quick concurrent
+QT += quick concurrent multimedia
 CONFIG += c++1x
 
 # The following define makes your compiler emit warnings if you use
