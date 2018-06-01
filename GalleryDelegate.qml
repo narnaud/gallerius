@@ -25,7 +25,9 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: 10
-        color: "lightgrey"
+        color: "transparent"
+        border.color: "grey"
+        border.width: 1
         visible: mouseArea.containsMouse
     }
 
@@ -57,7 +59,7 @@ Item {
             top: parent.top
             margins: 5
         }
-        visible: mouseArea.containsMouse
+        visible: mouseArea.containsMouse || parent.GridView.isCurrentItem
 
         source: model.filter ? "qrc:///assets/eye-slash.png" : "qrc:///assets/eye.png"
 

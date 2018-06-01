@@ -6,7 +6,7 @@ FocusScope {
 
     Rectangle {
         anchors.fill: parent
-        color: view.currentItem.filter ? "white" : "black"
+        color: visible? (view.currentItem.filter ? "white" : "black") : "black"
         opacity: 0.9
     }
 

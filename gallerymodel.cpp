@@ -46,6 +46,8 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         return "";
     case FilterRole:
         return media.filter;
+    case MediaRole:
+        return QVariant::fromValue(media);
     }
 
     return {};

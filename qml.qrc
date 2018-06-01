@@ -4,8 +4,10 @@
         <file>WelcomeScreen.qml</file>
         <file>GalleryDelegate.qml</file>
         <file>style.js</file>
-        <file>BreadCrumb.qml</file>
         <file>MediaViewer.qml</file>
         <file>MediaDelegate.qml</file>
+        <file>MainView.qml</file>
+        <file>Header.qml</file>
+        <file>Footer.qml</file>
     </qresource>
 </RCC>

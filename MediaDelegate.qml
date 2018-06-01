@@ -25,11 +25,24 @@ Item {
             id: video
             anchors.fill: parent
             source: model.filePath
+            property bool isPlaying: false
+
+            onPlaying: {
+                thumbnail.visible = false
+                isPlaying = true
+            }
+            onPaused: isPlaying = false
+            onStopped: isPlaying = false
+
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
-                    video.play()
-                }
+                onClicked: parent.isPlaying ? video.pause() : video.play()
+            }
+            Image {
+                id: thumbnail
+                anchors.centerIn: parent
+                source: model.thumbnail
+
             }
         }
     }

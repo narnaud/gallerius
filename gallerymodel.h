@@ -18,6 +18,7 @@ public:
         TypeRole,
         ThumbnailRole,
         FilterRole,
+        MediaRole,
     };
 
 public:

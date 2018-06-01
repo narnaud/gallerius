@@ -1,6 +1,8 @@
 #ifndef GALLERYFILTERPROXYMODEL_H
 #define GALLERYFILTERPROXYMODEL_H
 
+#include "data.h"
+
 #include <QSortFilterProxyModel>
 
 class GalleryFilterProxyModel : public QSortFilterProxyModel

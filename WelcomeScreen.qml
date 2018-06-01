@@ -2,10 +2,10 @@ import QtQuick 2.10
 import QtQuick.Controls 2.3
 import Qt.labs.platform 1.0
 
-Popup {
-    modal: true
-    focus: true
-    closePolicy: Popup.NoAutoClose
+Item {
+    id: root
+
+    signal pathChanged(var path)
 
     Column {
         spacing: 20
@@ -17,10 +17,8 @@ Popup {
         Button {
             text: qsTr("Open Last Directory")
             enabled: _savedRootPath.toString() !== ""
-            onClicked: {
-                _gallery.rootPath = _savedRootPath
-                close()
-            }
+            focus: true
+            onClicked: pathChanged(_savedRootPath)
         }
     }
 
@@ -30,9 +28,6 @@ Popup {
                        ? StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
                        : _savedRootPath
 
-        onAccepted: {
-            _gallery.rootPath = folder
-            close()
-        }
+        onAccepted: pathChanged(folder)
     }
 }
