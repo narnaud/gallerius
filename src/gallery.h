@@ -52,6 +52,7 @@ signals:
 public slots:
     void setRootPath(QUrl rootPath);
     void setPath(QUrl path);
+    void cdUp();
 
     void toggleMediaFilter(int index);
 

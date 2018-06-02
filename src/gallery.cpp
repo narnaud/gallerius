@@ -106,6 +106,16 @@ void Gallery::setPath(QUrl path)
     emit pathChanged(m_path);
 }
 
+void Gallery::cdUp()
+{
+    if (m_path == m_rootPath)
+        return;
+
+    QDir path = m_path.toLocalFile();
+    path.cdUp();
+    setPath(QUrl::fromLocalFile(path.path()));
+}
+
 void Gallery::toggleMediaFilter(int index)
 {
     Media &media = m_data.media[index];
