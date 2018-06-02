@@ -3,7 +3,6 @@
 #include "gallery.h"
 #include "galleryfilterproxymodel.h"
 #include "gallerymodel.h"
-#include "mediaproxymodel.h"
 #include "thumbnailprovider.h"
 
 #include <QGuiApplication>
@@ -24,8 +23,6 @@ int main(int argc, char *argv[])
     GalleryModel model(&gallery);
     GalleryFilterProxyModel proxyModel;
     proxyModel.setSourceModel(&model);
-    MediaProxyModel mediaProxyModel;
-    mediaProxyModel.setSourceModel(&proxyModel);
 
     QSettings settings;
     QUrl savedRootPath = settings.value(Constants::RootPathKey).toUrl();
@@ -35,7 +32,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("_gallery", &gallery);
     engine.rootContext()->setContextProperty("_savedRootPath", savedRootPath);
     engine.rootContext()->setContextProperty("_model", &proxyModel);
-    engine.rootContext()->setContextProperty("_mediaModel", &mediaProxyModel);
 
     qmlRegisterUncreatableType<Media>("Gallerius", 1, 0, "Media",
                                       "You cannot create an instance of Media.");

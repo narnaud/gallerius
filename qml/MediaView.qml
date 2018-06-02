@@ -3,16 +3,22 @@ import QtMultimedia 5.8
 import Gallerius 1.0
 
 Item {
-    width: ListView.view.width
-    height: ListView.view.height
+    id: root
+    property bool filter: false
+    property var path: ""
+    property var type: Media.NoType
 
-    property bool filter: model.filter
+    Rectangle {
+        anchors.fill: parent
+        color: "black"
+        opacity: 0.9
+    }
 
     Component {
         id: imageComponent
         Image {
             anchors.centerIn: parent
-            source: model.filePath
+            source: root.path
             width: (parent.width < sourceSize.width) ? parent.width : sourceSize.width
             height: (parent.height < sourceSize.width) ? parent.height : sourceSize.height
             fillMode: Image.PreserveAspectFit
@@ -24,7 +30,7 @@ Item {
         Video {
             id: video
             anchors.fill: parent
-            source: model.filePath
+            source: root.path
             property bool isPlaying: false
 
             onPlaying: {
@@ -42,13 +48,18 @@ Item {
                 id: thumbnail
                 anchors.centerIn: parent
                 source: model.thumbnail
-
             }
         }
     }
 
     Loader {
         anchors.fill: parent
-        sourceComponent: model.type === Media.Image ? imageComponent : videoComponent
+        sourceComponent: {
+            switch (root.type) {
+            case Media.Image: imageComponent; break;
+            case Media.Video: imageComponent; break;
+            default: null
+            }
+        }
     }
 }

@@ -17,6 +17,8 @@ public:
 
     bool filter() const;
 
+    Q_INVOKABLE bool isDirectory(int proxy_row);
+
 public slots:
     void setFilter(bool setFilter);
 

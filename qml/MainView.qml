@@ -15,7 +15,13 @@ Item {
     Shortcut {
         enabled: mainView.visible
         sequence: "Left"
-        onActivated: grid.moveCurrentIndexLeft()
+        onActivated: {
+            if (media.visible && grid.currentIndex != 0) {
+                if (_model.isDirectory(grid.currentIndex - 1))
+                    return
+            }
+            grid.moveCurrentIndexLeft()
+        }
     }
 
     Shortcut {
@@ -25,13 +31,13 @@ Item {
     }
 
     Shortcut {
-        enabled: mainView.visible
+        enabled: mainView.visible && !media.visible
         sequence: "Up"
         onActivated: grid.moveCurrentIndexUp()
     }
 
     Shortcut {
-        enabled: mainView.visible
+        enabled: mainView.visible && !media.visible
         sequence: "Down"
         onActivated: grid.moveCurrentIndexDown()
     }
@@ -43,6 +49,8 @@ Item {
             if (grid.currentIndex !== -1) {
                 if (grid.currentItem.type === Media.Dir)
                     _gallery.setPath(grid.currentItem.path)
+                else
+                    media.visible = true
             }
         }
     }
@@ -61,6 +69,12 @@ Item {
                 _gallery.toggleMediaFilter(grid.currentIndex)
             }
         }
+    }
+
+    Shortcut {
+        enabled: mainView.visible
+        sequence: "Esc"
+        onActivated: media.visible = false
     }
 
 
@@ -98,6 +112,16 @@ Item {
         id: footer
         anchors.bottom: parent.bottom
         width: parent.width
+    }
+
+    MediaView {
+        id: media
+        anchors.fill: parent
+        visible: false
+        z: 10
+
+        path: grid.currentItem !== null ? grid.currentItem.path : ""
+        type: grid.currentItem !== null ? grid.currentItem.type : Media.NoType
     }
 }
 
