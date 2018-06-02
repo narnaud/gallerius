@@ -1,5 +1,4 @@
 import QtQuick 2.10
-import QtQuick.Window 2.10
 import QtQuick.Controls 2.3
 import Gallerius 1.0
 
@@ -28,9 +27,8 @@ Item {
         cellHeight: Style.imageSize + Style.margin
         snapMode: GridView.SnapToRow
 
-        onFocusChanged: {
-            focus = true
-        }
+        // The grid always keep the focus
+        onFocusChanged:  focus = true
 
         ScrollBar.vertical: ScrollBar { id: scrollBar }
 
@@ -40,12 +38,9 @@ Item {
             onPathChanged: grid.currentIndex = 0
         }
 
-
-        Keys.onReturnPressed: {
+        Keys.onSpacePressed: {
             if (currentItem.type === Media.Dir)
                 _gallery.setPath(currentItem.path)
-            else
-                openMedia(currentIndex)
         }
     }
 

@@ -1,10 +1,12 @@
 import QtQuick 2.10
-import QtQuick.Controls 2.2
 import Gallerius 1.0
 
 import "style.js" as Style
 
 Item {
+    property var type: model.type
+    property var path: model.filePath
+
     width: Style.imageSize + Style.margin
     height: Style.imageSize + Style.margin
 
@@ -28,7 +30,7 @@ Item {
         color: "transparent"
         border.color: "grey"
         border.width: 1
-        visible: mouseArea.containsMouse
+        visible: parent.GridView.isCurrentItem
     }
 
     Image {
@@ -53,13 +55,12 @@ Item {
         }
     }
 
+    // Filtering button
     Image {
-        anchors {
-            right: parent.right
-            top: parent.top
-            margins: 5
-        }
-        visible: mouseArea.containsMouse || parent.GridView.isCurrentItem
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 5
+        visible: model.filter || mouseArea.containsMouse || parent.GridView.isCurrentItem
 
         source: model.filter ? "qrc:///assets/eye-slash.png" : "qrc:///assets/eye.png"
 
