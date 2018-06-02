@@ -12,22 +12,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += main.cpp \
-    gallery.cpp \
-    gallerymodel.cpp \
-    thumbnailprovider.cpp \
-    galleryfilterproxymodel.cpp \
-    mediaproxymodel.cpp
+SOURCES += \
+    src/main.cpp \
+    src/gallery.cpp \
+    src/gallerymodel.cpp \
+    src/thumbnailprovider.cpp \
+    src/galleryfilterproxymodel.cpp \
+    src/mediaproxymodel.cpp
 
 HEADERS += \
-    constants.h \
-    gallery.h \
-    utility.h \
-    gallerymodel.h \
-    data.h \
-    thumbnailprovider.h \
-    galleryfilterproxymodel.h \
-    mediaproxymodel.h
+    src/constants.h \
+    src/gallery.h \
+    src/utility.h \
+    src/gallerymodel.h \
+    src/data.h \
+    src/thumbnailprovider.h \
+    src/galleryfilterproxymodel.h \
+    src/mediaproxymodel.h
 
-RESOURCES += qml.qrc \
+RESOURCES += \
+    qml/qml.qrc \
     assets/assets.qrc
