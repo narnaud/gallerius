@@ -5,8 +5,23 @@ import Gallerius 1.0
 Item {
     id: root
     property bool filter: false
-    property var path: ""
-    property var type: Media.NoType
+    property string imagePath: ""
+    property string videoPath: ""
+    property int type: Media.NoType
+
+    function togglePlay() {
+        if (type != Media.Video)
+            return;
+        if (video.isPlaying)
+            video.pause()
+        else
+            video.play()
+    }
+
+    onImagePathChanged: {
+        video.stop()
+        image.visible = true
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -14,52 +29,32 @@ Item {
         opacity: 0.9
     }
 
-    Component {
-        id: imageComponent
-        Image {
-            anchors.centerIn: parent
-            source: root.path
-            width: (parent.width < sourceSize.width) ? parent.width : sourceSize.width
-            height: (parent.height < sourceSize.width) ? parent.height : sourceSize.height
-            fillMode: Image.PreserveAspectFit
-        }
+    Image {
+        id: image
+        anchors.centerIn: parent
+        source: root.imagePath
+        width: (parent.width < sourceSize.width) ? parent.width : sourceSize.width
+        height: (parent.height < sourceSize.width) ? parent.height : sourceSize.height
+        fillMode: Image.PreserveAspectFit
     }
 
-    Component {
-        id: videoComponent
-        Video {
-            id: video
-            anchors.fill: parent
-            source: root.path
-            property bool isPlaying: false
-
-            onPlaying: {
-                thumbnail.visible = false
-                isPlaying = true
-            }
-            onPaused: isPlaying = false
-            onStopped: isPlaying = false
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: parent.isPlaying ? video.pause() : video.play()
-            }
-            Image {
-                id: thumbnail
-                anchors.centerIn: parent
-                source: model.thumbnail
-            }
-        }
-    }
-
-    Loader {
+    Video {
+        id: video
         anchors.fill: parent
-        sourceComponent: {
-            switch (root.type) {
-            case Media.Image: imageComponent; break;
-            case Media.Video: imageComponent; break;
-            default: null
-            }
+        source: root.videoPath
+        property bool isPlaying: false
+        visible: root.type == Media.Video
+
+        onPlaying: {
+            image.visible = false
+            isPlaying = true
+        }
+        onPaused: isPlaying = false
+        onStopped: isPlaying = false
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: togglePlay()
         }
     }
 }

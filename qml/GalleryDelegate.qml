@@ -6,6 +6,7 @@ import "style.js" as Style
 Item {
     property var type: model.type
     property var path: model.filePath
+    property var thumbnail: model.thumbnail
 
     width: Style.imageSize + Style.margin
     height: Style.imageSize + Style.margin

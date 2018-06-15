@@ -46,7 +46,10 @@ Item {
         enabled: mainView.visible
         sequence: "Space"
         onActivated: {
-            if (grid.currentIndex !== -1) {
+            if (media.visible) {
+                media.togglePlay()
+            }
+            else if (grid.currentIndex !== -1) {
                 if (grid.currentItem.type === Media.Dir)
                     _gallery.setPath(grid.currentItem.path)
                 else
@@ -120,8 +123,19 @@ Item {
         visible: false
         z: 10
 
-        path: grid.currentItem !== null ? grid.currentItem.path : ""
         type: grid.currentItem !== null ? grid.currentItem.type : Media.NoType
+        imagePath: {
+            if (grid.currentItem === null) return ""
+            switch (grid.currentItem.type) {
+            case Media.Video: return grid.currentItem.thumbnail
+            case Media.Image: return grid.currentItem.path
+            default: return ""
+            }
+        }
+        videoPath: {
+            if (grid.currentItem === null || grid.currentItem.type !== Media.Video) return ""
+            return grid.currentItem.path
+        }
     }
 }
 

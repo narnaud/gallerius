@@ -187,14 +187,17 @@ static void computeThumbnail(Media &media, const QString &tempPath)
                                            Qt::SmoothTransformation);
     } else if (media.type == Media::Video) {
         const QString outName = tempPath + '/' + media.fileName + ".jpg";
-        int code = QProcess::execute(QString("ffmpeg -loglevel quiet -i \"%1\" -vframes 1 \"%2\"")
-                                         .arg(media.filePath)
-                                         .arg(QDir::toNativeSeparators(outName)));
-        if (code == 0) {
-            QImage thumbnail(outName);
-            media.thumbnail = thumbnail.scaled(ThumbnailSize, ThumbnailSize, Qt::KeepAspectRatio,
-                                               Qt::SmoothTransformation);
+        if (!QFile::exists(outName)) {
+            int code =
+                QProcess::execute(QString("ffmpeg -loglevel quiet -i \"%1\" -vframes 1 \"%2\"")
+                                      .arg(media.filePath)
+                                      .arg(QDir::toNativeSeparators(outName)));
+            if (code != 0)
+                return;
         }
+        QImage thumbnail(outName);
+        media.thumbnail = thumbnail.scaled(2 * ThumbnailSize, 2 * ThumbnailSize,
+                                           Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
 }
 
