@@ -144,7 +144,7 @@ static QStringList parseNomedia(const QString &path)
 static Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
 {
     static std::vector<QString> imageSuffix = {"jpg", "jpeg", "png", "gif"};
-    static std::vector<QString> videoSuffix = {"mov", "avi", "mp4", "webm", "ogv", "3gp"};
+    static std::vector<QString> videoSuffix = {"MOV", "mov", "avi", "mp4", "webm", "ogv", "3gp"};
 
     Media media;
     if (fileInfo.isDir()) {

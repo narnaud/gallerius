@@ -57,4 +57,12 @@ Item {
             onClicked: togglePlay()
         }
     }
+
+    // Filtering button
+    Image {
+        anchors.centerIn: parent
+        visible: parent.filter
+
+        source: "qrc:///assets/eye-slash.png"
+    }
 }
