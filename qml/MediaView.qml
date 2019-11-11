@@ -59,10 +59,15 @@ Item {
     }
 
     // Filtering button
-    Image {
-        anchors.centerIn: parent
+    Rectangle {
+        anchors.fill: parent
+        color: "gray"
+        opacity: 0.75
         visible: parent.filter
-
-        source: "qrc:///assets/eye-slash.png"
+        Image {
+            anchors.centerIn: parent
+            source: "qrc:///assets/eye-slash.png"
+        }
     }
+
 }

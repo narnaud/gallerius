@@ -123,6 +123,7 @@ Item {
         visible: false
         z: 10
 
+        filter: grid.currentItem.filter
         type: grid.currentItem !== null ? grid.currentItem.type : Media.NoType
         imagePath: {
             if (grid.currentItem === null) return ""
