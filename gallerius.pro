@@ -1,5 +1,5 @@
-QT += quick concurrent multimedia
-CONFIG += c++1x
+QT += widgets concurrent multimedia
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings
@@ -14,20 +14,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     src/main.cpp \
-    src/gallery.cpp \
-    src/gallerymodel.cpp \
-    src/thumbnailprovider.cpp \
-    src/galleryfilterproxymodel.cpp
 
 HEADERS += \
     src/constants.h \
-    src/gallery.h \
     src/utility.h \
-    src/gallerymodel.h \
-    src/data.h \
-    src/thumbnailprovider.h \
-    src/galleryfilterproxymodel.h
 
 RESOURCES += \
-    qml/qml.qrc \
-    assets/assets.qrc

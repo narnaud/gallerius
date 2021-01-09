@@ -20,6 +20,10 @@ Gallery::Gallery(QObject *parent)
     : QObject(parent)
     , m_watcher(new QFutureWatcher<void>(this))
 {
+
+    int a = 5;
+    connect(m_watcher, &QFutureWatcher<void>::finished, [&a]() { a++; });
+
     connect(m_watcher, &QFutureWatcher<void>::progressValueChanged, this,
             &Gallery::progressValueChanged);
     connect(m_watcher, &QFutureWatcher<void>::finished, this, &Gallery::thumbnailsDone);
