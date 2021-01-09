@@ -22,6 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->galleryView->setModel(m_galleryModel);
     ui->galleryView->setViewMode(QListView::IconMode);
+    ui->galleryView->setResizeMode(QListView::Adjust);
+    ui->galleryView->setUniformItemSizes(true);
+    ui->galleryView->setIconSize(QSize(GalleryModel::ThumbnailSize, GalleryModel::ThumbnailSize));
+    ui->galleryView->setGridSize(
+        QSize(GalleryModel::ThumbnailSize + 20, GalleryModel::ThumbnailSize + 20));
 
     connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
             &MainWindow::selectDirectory);

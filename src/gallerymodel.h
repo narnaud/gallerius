@@ -1,17 +1,32 @@
 #ifndef GALLERYMODEL_H
 #define GALLERYMODEL_H
 
-#include "data.h"
-
 #include <QAbstractListModel>
+#include <QPixmap>
+#include <QTemporaryDir>
+#include <QVector>
 
-class Gallery;
+template <typename T>
+class QFutureWatcher;
 
 class GalleryModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
+    static constexpr int ThumbnailSize = 160;
+
+    struct Media
+    {
+        enum Type { Image, Video, NoType };
+
+        QString fileName;
+        QString filePath;
+        QPixmap thumbnail;
+        Type type = NoType;
+        bool filter = false;
+    };
+
     explicit GalleryModel(QObject *parent = nullptr);
     ~GalleryModel();
 
@@ -21,7 +36,16 @@ public:
     void setPath(const QString &path);
 
 private:
-    QStringList m_files;
+    void loadData();
+    void writeData();
+
+private:
+    bool m_hasChanged = false;
+    QString m_path;
+    QVector<Media> m_media;
+
+    QFutureWatcher<void> *m_watcher;
+    QTemporaryDir m_tempDirectory;
 };
 
 #endif // GALLERYMODEL_H
