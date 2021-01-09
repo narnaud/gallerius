@@ -14,9 +14,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     src/main.cpp \
+    src/mainwindow.cpp
 
 HEADERS += \
     src/constants.h \
+    src/mainwindow.h \
     src/utility.h \
 
 RESOURCES += \
+
+FORMS += \
+    src/mainwindow.ui

@@ -1,5 +1,7 @@
 #include "constants.h"
 
+#include "mainwindow.h"
+
 #include <QApplication>
 #include <QDir>
 #include <QFileDialog>
@@ -12,6 +14,8 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+    MainWindow mainWindow;
+
     QSettings settings;
     QString rootPath = settings.value(Constants::RootPathKey).toString();
     if (rootPath.isEmpty()) {
@@ -19,6 +23,8 @@ int main(int argc, char *argv[])
                                                      QDir::homePath());
         settings.setValue(Constants::RootPathKey, rootPath);
     }
+
+    mainWindow.show();
 
     return app.exec();
 }
