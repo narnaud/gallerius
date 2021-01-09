@@ -12,28 +12,16 @@ class GalleryModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    enum Role {
-        FileNameRole = Qt::UserRole,
-        FilePathRole,
-        TypeRole,
-        ThumbnailRole,
-        FilterRole,
-        MediaRole,
-    };
-
-public:
-    explicit GalleryModel(Gallery *gallery = nullptr);
+    explicit GalleryModel(QObject *parent = nullptr);
     ~GalleryModel();
 
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
-    QHash<int, QByteArray> roleNames() const override;
-
-    QPixmap thumbnail(const QString &id);
+    void setPath(const QString &path);
 
 private:
-    Gallery *m_gallery;
+    QStringList m_files;
 };
 
 #endif // GALLERYMODEL_H

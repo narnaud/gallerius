@@ -6,6 +6,7 @@
 #include <memory>
 
 class QFileSystemModel;
+class GalleryModel;
 
 namespace Ui {
 class MainWindow;
@@ -22,8 +23,12 @@ public:
     void setRootPath(const QString &rootPath);
 
 private:
+    void selectDirectory(const QModelIndex &index);
+
+private:
     std::unique_ptr<Ui::MainWindow> ui;
     QFileSystemModel *m_fileModel = nullptr;
+    GalleryModel *m_galleryModel = nullptr;
 };
 
 #endif // MAINWINDOW_H
