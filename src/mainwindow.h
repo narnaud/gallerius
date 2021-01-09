@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 
+#include <memory>
+
+class QFileSystemModel;
+
 namespace Ui {
 class MainWindow;
 }
@@ -15,8 +19,11 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void setRootPath(const QString &rootPath);
+
 private:
-    Ui::MainWindow *ui;
+    std::unique_ptr<Ui::MainWindow> ui;
+    QFileSystemModel *m_fileModel = nullptr;
 };
 
 #endif // MAINWINDOW_H

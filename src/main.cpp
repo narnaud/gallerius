@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     MainWindow mainWindow;
+    mainWindow.show();
 
     QSettings settings;
     QString rootPath = settings.value(Constants::RootPathKey).toString();
@@ -23,8 +24,7 @@ int main(int argc, char *argv[])
                                                      QDir::homePath());
         settings.setValue(Constants::RootPathKey, rootPath);
     }
-
-    mainWindow.show();
+    mainWindow.setRootPath(rootPath);
 
     return app.exec();
 }
