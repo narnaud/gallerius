@@ -34,11 +34,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->galleryView->setUniformItemSizes(true);
     ui->galleryView->setSpacing(GalleryDelegate::Margin);
 
-    auto progressBar = new QProgressBar(this);
-    statusBar()->addPermanentWidget(progressBar);
-    connect(m_galleryModel, &GalleryModel::modelReset, this,
-            [this, progressBar]() { progressBar->setMaximum(m_galleryModel->rowCount()); });
-    connect(m_galleryModel, &GalleryModel::progressChanged, progressBar, &QProgressBar::setValue);
+    m_progressBar = new QProgressBar(this);
+    statusBar()->addPermanentWidget(m_progressBar, 1);
+    connect(m_galleryModel, &GalleryModel::progressChanged, this, &MainWindow::updateProgressBar);
+    m_progressBar->hide();
 
     ui->allButton->setShortcut(QKeySequence("Ctrl+A"));
     connect(ui->allButton, &QToolButton::toggled, this, [filterModel](bool checked) {
@@ -69,4 +68,12 @@ void MainWindow::selectDirectory(const QModelIndex &index)
 {
     const QString &path = m_fileModel->filePath(index);
     m_galleryModel->setPath(path);
+}
+
+void MainWindow::updateProgressBar(int value, int total)
+{
+    const bool hide = total != 0 && value != total;
+    m_progressBar->setVisible(hide);
+    m_progressBar->setMaximum(total);
+    m_progressBar->setValue(value);
 }

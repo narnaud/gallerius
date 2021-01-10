@@ -7,6 +7,7 @@
 
 class QFileSystemModel;
 class GalleryModel;
+class QProgressBar;
 
 namespace Ui {
 class MainWindow;
@@ -24,11 +25,13 @@ public:
 
 private:
     void selectDirectory(const QModelIndex &index);
+    void updateProgressBar(int value, int total);
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     QFileSystemModel *m_fileModel = nullptr;
     GalleryModel *m_galleryModel = nullptr;
+    QProgressBar *m_progressBar = nullptr;
 };
 
 #endif // MAINWINDOW_H

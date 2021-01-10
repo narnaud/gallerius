@@ -40,7 +40,7 @@ public:
     void setPath(const QString &path);
 
 signals:
-    void progressChanged(int progressValue);
+    void progressChanged(int progressValue, int total);
 
 private:
     void loadData();

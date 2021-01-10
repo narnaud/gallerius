@@ -11,11 +11,14 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Gallerius</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" rowspan="2">
+    <item row="1" column="1">
+     <widget class="QListView" name="galleryView"/>
+    </item>
+    <item row="1" column="0">
      <widget class="QTreeView" name="directoryView">
       <property name="maximumSize">
        <size>
@@ -25,7 +28,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="0" colspan="2">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
        <number>0</number>
@@ -86,9 +89,6 @@
        </widget>
       </item>
      </layout>
-    </item>
-    <item row="1" column="1">
-     <widget class="QListView" name="galleryView"/>
     </item>
    </layout>
   </widget>

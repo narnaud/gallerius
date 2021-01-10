@@ -14,10 +14,13 @@ GalleryModel::GalleryModel(QObject *parent)
     , m_watcher(new QFutureWatcher<void>(this))
 {
     connect(m_watcher, &QFutureWatcher<void>::finished, this, [this]() {
-        emit dataChanged(index(0, 0), index(m_media.count(), 0), {Qt::DecorationRole});
+        // For whatever reasons, the dataChanged does not update the thumbnails
+        // emit dataChanged(index(0, 0), index(m_media.count(), 0), {Qt::DecorationRole});
+        beginResetModel();
+        endResetModel();
     });
     connect(m_watcher, &QFutureWatcher<void>::progressValueChanged, this,
-            &GalleryModel::progressChanged);
+            [this](int value) { emit progressChanged(value, m_media.count()); });
 }
 
 GalleryModel::~GalleryModel()
