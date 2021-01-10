@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "gallerydelegate.h"
 #include "gallerymodel.h"
 
 #include <QFileSystemModel>
@@ -21,10 +22,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->directoryView->hideColumn(3);
 
     ui->galleryView->setModel(m_galleryModel);
+    ui->galleryView->setItemDelegate(new GalleryDelegate(this));
     ui->galleryView->setViewMode(QListView::IconMode);
     ui->galleryView->setResizeMode(QListView::Adjust);
     ui->galleryView->setUniformItemSizes(true);
-    ui->galleryView->setSpacing(10);
+    ui->galleryView->setSpacing(GalleryDelegate::Margin);
 
     connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
             &MainWindow::selectDirectory);

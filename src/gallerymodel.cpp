@@ -36,8 +36,6 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         return m_media.at(index.row()).fileName;
     case Qt::DecorationRole:
         return m_media.at(index.row()).thumbnail;
-    case ::Qt::SizeHintRole:
-        return QSize(ThumbnailSize, ThumbnailSize);
     }
 
     return {};
