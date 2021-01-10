@@ -45,6 +45,8 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         return m_media.at(index.row()).thumbnail;
     case FilterRole:
         return m_media.at(index.row()).filter;
+    case MediaRole:
+        return m_media.at(index.row()).type;
     }
 
     return {};

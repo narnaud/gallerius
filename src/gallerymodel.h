@@ -18,6 +18,7 @@ public:
 
     enum Roles {
         FilterRole = Qt::UserRole + 1,
+        MediaRole,
     };
 
     struct Media
