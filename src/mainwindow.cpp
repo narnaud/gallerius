@@ -5,6 +5,7 @@
 #include "gallerymodel.h"
 
 #include <QFileSystemModel>
+#include <QProgressBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +31,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
             &MainWindow::selectDirectory);
+
+    auto progressBar = new QProgressBar(this);
+    statusBar()->addPermanentWidget(progressBar);
+
+    connect(m_galleryModel, &GalleryModel::modelReset, this,
+            [this, progressBar]() { progressBar->setMaximum(m_galleryModel->rowCount()); });
+    connect(m_galleryModel, &GalleryModel::progressChanged, progressBar, &QProgressBar::setValue);
 }
 
 MainWindow::~MainWindow() { }

@@ -15,6 +15,8 @@ GalleryModel::GalleryModel(QObject *parent)
 {
     connect(m_watcher, &QFutureWatcher<void>::finished, this,
             [this]() { emit dataChanged(index(0, 0), index(m_media.count(), 0)); });
+    connect(m_watcher, &QFutureWatcher<void>::progressValueChanged, this,
+            &GalleryModel::progressChanged);
 }
 
 GalleryModel::~GalleryModel()

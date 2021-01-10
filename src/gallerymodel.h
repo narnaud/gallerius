@@ -34,10 +34,13 @@ public:
     explicit GalleryModel(QObject *parent = nullptr);
     ~GalleryModel();
 
-    int rowCount(const QModelIndex &parent) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
     void setPath(const QString &path);
+
+signals:
+    void progressChanged(int progressValue);
 
 private:
     void loadData();
