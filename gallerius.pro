@@ -14,6 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     src/gallerydelegate.cpp \
+    src/galleryfilterproxymodel.cpp \
     src/gallerymodel.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 HEADERS += \
     src/constants.h \
     src/gallerydelegate.h \
+    src/galleryfilterproxymodel.h \
     src/gallerymodel.h \
     src/mainwindow.h \
     src/utility.h \

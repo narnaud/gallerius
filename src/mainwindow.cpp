@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "gallerydelegate.h"
+#include "galleryfilterproxymodel.h"
 #include "gallerymodel.h"
 
 #include <QFileSystemModel>
@@ -21,23 +22,39 @@ MainWindow::MainWindow(QWidget *parent)
     ui->directoryView->hideColumn(1);
     ui->directoryView->hideColumn(2);
     ui->directoryView->hideColumn(3);
+    connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
+            &MainWindow::selectDirectory);
 
-    ui->galleryView->setModel(m_galleryModel);
+    auto filterModel = new GalleryFilterProxyModel(this);
+    filterModel->setSourceModel(m_galleryModel);
+    ui->galleryView->setModel(filterModel);
     ui->galleryView->setItemDelegate(new GalleryDelegate(this));
     ui->galleryView->setViewMode(QListView::IconMode);
     ui->galleryView->setResizeMode(QListView::Adjust);
     ui->galleryView->setUniformItemSizes(true);
     ui->galleryView->setSpacing(GalleryDelegate::Margin);
 
-    connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
-            &MainWindow::selectDirectory);
-
     auto progressBar = new QProgressBar(this);
     statusBar()->addPermanentWidget(progressBar);
-
     connect(m_galleryModel, &GalleryModel::modelReset, this,
             [this, progressBar]() { progressBar->setMaximum(m_galleryModel->rowCount()); });
     connect(m_galleryModel, &GalleryModel::progressChanged, progressBar, &QProgressBar::setValue);
+
+    ui->allButton->setShortcut(QKeySequence("Ctrl+A"));
+    connect(ui->allButton, &QToolButton::toggled, this, [filterModel](bool checked) {
+        if (checked)
+            filterModel->setFilter(GalleryFilterProxyModel::All);
+    });
+    ui->onlyVisibleButton->setShortcut(QKeySequence("Ctrl+V"));
+    connect(ui->onlyVisibleButton, &QToolButton::toggled, this, [filterModel](bool checked) {
+        if (checked)
+            filterModel->setFilter(GalleryFilterProxyModel::OnlyVisible);
+    });
+    ui->onlyHiddenButton->setShortcut(QKeySequence("Ctrl+H"));
+    connect(ui->onlyHiddenButton, &QToolButton::toggled, this, [filterModel](bool checked) {
+        if (checked)
+            filterModel->setFilter(GalleryFilterProxyModel::OnlyHidden);
+    });
 }
 
 MainWindow::~MainWindow() { }

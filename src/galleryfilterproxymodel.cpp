@@ -1,6 +1,5 @@
 #include "galleryfilterproxymodel.h"
 
-#include "data.h"
 #include "gallerymodel.h"
 
 GalleryFilterProxyModel::GalleryFilterProxyModel(QObject *parent)
@@ -11,30 +10,19 @@ GalleryFilterProxyModel::GalleryFilterProxyModel(QObject *parent)
 bool GalleryFilterProxyModel::filterAcceptsRow(int source_row,
                                                const QModelIndex &source_parent) const
 {
-    if (!m_filter)
+    if (m_filter == All)
         return true;
 
     auto index = sourceModel()->index(source_row, 0, source_parent);
-    return !index.data(GalleryModel::FilterRole).toBool();
+    const bool filtered = index.data(GalleryModel::FilterRole).toBool();
+    return (!filtered && (m_filter == OnlyVisible)) || (filtered && (m_filter == OnlyHidden));
 }
 
-bool GalleryFilterProxyModel::filter() const
+void GalleryFilterProxyModel::setFilter(GalleryFilterProxyModel::Filter f)
 {
-    return m_filter;
-}
-
-bool GalleryFilterProxyModel::isDirectory(int proxy_row)
-{
-    QModelIndex sourceIndex = mapToSource(index(proxy_row, 0));
-    return sourceIndex.data(GalleryModel::TypeRole).value<Media::Type>() == Media::Dir;
-}
-
-void GalleryFilterProxyModel::setFilter(bool showAll)
-{
-    if (m_filter == showAll)
+    if (m_filter == f)
         return;
 
-    m_filter = showAll;
-    emit filterChanged(m_filter);
+    m_filter = f;
     invalidateFilter();
 }
