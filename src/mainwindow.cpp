@@ -25,9 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
             &MainWindow::selectDirectory);
 
-    auto filterModel = new GalleryFilterProxyModel(this);
-    filterModel->setSourceModel(m_galleryModel);
-    ui->galleryView->setModel(filterModel);
+    m_filterModel = new GalleryFilterProxyModel(this);
+    m_filterModel->setSourceModel(m_galleryModel);
+    ui->galleryView->setModel(m_filterModel);
     ui->galleryView->setItemDelegate(new GalleryDelegate(this));
     ui->galleryView->setViewMode(QListView::IconMode);
     ui->galleryView->setResizeMode(QListView::Adjust);
@@ -40,20 +40,23 @@ MainWindow::MainWindow(QWidget *parent)
     m_progressBar->hide();
 
     ui->allButton->setShortcut(QKeySequence("Ctrl+A"));
-    connect(ui->allButton, &QToolButton::toggled, this, [filterModel](bool checked) {
+    connect(ui->allButton, &QToolButton::toggled, this, [this](bool checked) {
         if (checked)
-            filterModel->setFilter(GalleryFilterProxyModel::All);
+            m_filterModel->setFilter(GalleryFilterProxyModel::All);
     });
     ui->onlyVisibleButton->setShortcut(QKeySequence("Ctrl+V"));
-    connect(ui->onlyVisibleButton, &QToolButton::toggled, this, [filterModel](bool checked) {
+    connect(ui->onlyVisibleButton, &QToolButton::toggled, this, [this](bool checked) {
         if (checked)
-            filterModel->setFilter(GalleryFilterProxyModel::OnlyVisible);
+            m_filterModel->setFilter(GalleryFilterProxyModel::OnlyVisible);
     });
     ui->onlyHiddenButton->setShortcut(QKeySequence("Ctrl+H"));
-    connect(ui->onlyHiddenButton, &QToolButton::toggled, this, [filterModel](bool checked) {
+    connect(ui->onlyHiddenButton, &QToolButton::toggled, this, [this](bool checked) {
         if (checked)
-            filterModel->setFilter(GalleryFilterProxyModel::OnlyHidden);
+            m_filterModel->setFilter(GalleryFilterProxyModel::OnlyHidden);
     });
+
+    ui->visibilityButton->setShortcut(QKeySequence("Space"));
+    connect(ui->visibilityButton, &QToolButton::clicked, this, &MainWindow::toggleMedia);
 }
 
 MainWindow::~MainWindow() { }
@@ -76,4 +79,14 @@ void MainWindow::updateProgressBar(int value, int total)
     m_progressBar->setVisible(hide);
     m_progressBar->setMaximum(total);
     m_progressBar->setValue(value);
+}
+
+void MainWindow::toggleMedia()
+{
+    const auto index = ui->galleryView->selectionModel()->currentIndex();
+    if (!index.isValid())
+        return;
+    const bool filtered = index.data(GalleryModel::FilterRole).toBool();
+    const auto sourceIndex = m_filterModel->mapToSource(index);
+    m_galleryModel->setData(sourceIndex, !filtered, GalleryModel::FilterRole);
 }

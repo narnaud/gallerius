@@ -27,6 +27,7 @@ GalleryModel::~GalleryModel()
 {
     m_watcher->cancel();
     m_watcher->waitForFinished();
+    writeData();
 }
 
 int GalleryModel::rowCount(const QModelIndex &parent) const
@@ -47,6 +48,18 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
     }
 
     return {};
+}
+
+bool GalleryModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    switch (role) {
+    case FilterRole:
+        m_media[index.row()].filter = value.toBool();
+        emit dataChanged(index, index, {FilterRole});
+        m_hasChanged = true;
+        return true;
+    }
+    return false;
 }
 
 void GalleryModel::setPath(const QString &path)
@@ -150,8 +163,8 @@ void GalleryModel::loadData()
                           })));
 
     emit beginResetModel();
-    m_media = std::move(data);
     m_hasChanged = false;
+    m_media = std::move(data);
     emit endResetModel();
 }
 

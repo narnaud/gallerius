@@ -28,11 +28,18 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="0" colspan="2">
+    <item row="0" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
        <number>0</number>
       </property>
+      <item>
+       <widget class="QToolButton" name="visibilityButton">
+        <property name="text">
+         <string>Toggle Visibility</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
