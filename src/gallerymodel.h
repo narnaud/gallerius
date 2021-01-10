@@ -16,6 +16,10 @@ class GalleryModel : public QAbstractListModel
 public:
     static constexpr int ThumbnailSize = 160;
 
+    enum Roles {
+        FilterRole = Qt::UserRole + 1,
+    };
+
     struct Media
     {
         enum Type { Image, Video, NoType };
