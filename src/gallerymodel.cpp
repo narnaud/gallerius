@@ -95,8 +95,10 @@ static QVector<GalleryModel::Media> loadMedia(const QDir &dir)
     result.reserve(list.size());
     for (const auto &info : list) {
         auto media = createMedia(info, nomedia);
-        if (media.type != GalleryModel::Media::NoType)
+        if (media.type != GalleryModel::Media::NoType) {
+            QPixmapCache::find(media.filePath, &media.thumbnail);
             result.push_back(std::move(media));
+        }
     }
 
     return result;
@@ -104,8 +106,8 @@ static QVector<GalleryModel::Media> loadMedia(const QDir &dir)
 
 static void computeThumbnail(GalleryModel::Media &media, const QString &tempPath)
 {
-    //    if (QPixmapCache::find(media.filePath, &media.thumbnail))
-    //        return;
+    if (!media.thumbnail.isNull())
+        return;
 
     if (media.type == GalleryModel::Media::Image) {
         QPixmap thumbnail(media.filePath);
@@ -125,7 +127,7 @@ static void computeThumbnail(GalleryModel::Media &media, const QString &tempPath
         media.thumbnail = thumbnail.scaled(GalleryModel::ThumbnailSize, GalleryModel::ThumbnailSize,
                                            Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    //    QPixmapCache::insert(media.fileName, media.thumbnail);
+    QPixmapCache::insert(media.fileName, media.thumbnail);
 }
 
 void GalleryModel::loadData()
