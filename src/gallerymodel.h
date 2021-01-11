@@ -42,6 +42,7 @@ public:
     void toggleMedia(const QModelIndex &index);
     bool deleteMedia(const QModelIndex &index);
 
+    QString path() const;
     void setPath(const QString &path);
 
 signals:

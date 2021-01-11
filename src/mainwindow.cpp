@@ -7,6 +7,7 @@
 
 #include <QFileSystemModel>
 #include <QProgressBar>
+#include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -58,8 +59,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->visibilityButton->setShortcut(QKeySequence("Space"));
     connect(ui->visibilityButton, &QToolButton::clicked, this, &MainWindow::toggleMedia);
 
-    ui->deleteButton->setShortcut(QKeySequence(QKeySequence::Delete));
-    connect(ui->deleteButton, &QToolButton::clicked, this, &MainWindow::deleteMedia);
+    auto deleteShortcut = new QShortcut(QKeySequence(QKeySequence::Delete), this);
+    connect(deleteShortcut, &QShortcut::activated, this, &MainWindow::deleteMedia);
+
+    auto goUpShortcut = new QShortcut(QKeySequence("Alt+Up"), this);
+    connect(goUpShortcut, &QShortcut::activated, this, &MainWindow::goUp);
 }
 
 MainWindow::~MainWindow() { }
@@ -106,4 +110,13 @@ void MainWindow::deleteMedia()
     if (!index.isValid())
         return;
     m_galleryModel->deleteMedia(index);
+}
+
+void MainWindow::goUp()
+{
+    QDir dir(m_galleryModel->path());
+    dir.cdUp();
+    const auto index = m_fileModel->index(dir.path());
+    ui->directoryView->selectionModel()->setCurrentIndex(index,
+                                                         QItemSelectionModel::ClearAndSelect);
 }

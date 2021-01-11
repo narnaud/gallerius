@@ -94,6 +94,11 @@ bool GalleryModel::deleteMedia(const QModelIndex &index)
     return false;
 }
 
+QString GalleryModel::path() const
+{
+    return m_path;
+}
+
 void GalleryModel::setPath(const QString &path)
 {
     writeData();
