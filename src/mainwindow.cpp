@@ -39,17 +39,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_galleryModel, &GalleryModel::progressChanged, this, &MainWindow::updateProgressBar);
     m_progressBar->hide();
 
-    ui->allButton->setShortcut(QKeySequence("Ctrl+A"));
+    ui->allButton->setShortcut(QKeySequence("1"));
     connect(ui->allButton, &QToolButton::toggled, this, [this](bool checked) {
         if (checked)
             m_filterModel->setFilter(GalleryFilterProxyModel::All);
     });
-    ui->onlyVisibleButton->setShortcut(QKeySequence("Ctrl+V"));
+    ui->onlyVisibleButton->setShortcut(QKeySequence("2"));
     connect(ui->onlyVisibleButton, &QToolButton::toggled, this, [this](bool checked) {
         if (checked)
             m_filterModel->setFilter(GalleryFilterProxyModel::OnlyVisible);
     });
-    ui->onlyHiddenButton->setShortcut(QKeySequence("Ctrl+H"));
+    ui->onlyHiddenButton->setShortcut(QKeySequence("3"));
     connect(ui->onlyHiddenButton, &QToolButton::toggled, this, [this](bool checked) {
         if (checked)
             m_filterModel->setFilter(GalleryFilterProxyModel::OnlyHidden);
