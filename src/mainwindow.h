@@ -38,6 +38,7 @@ private:
     GalleryModel *m_galleryModel = nullptr;
     GalleryFilterProxyModel *m_filterModel = nullptr;
     QProgressBar *m_progressBar = nullptr;
+    QString m_rootPath;
 };
 
 #endif // MAINWINDOW_H

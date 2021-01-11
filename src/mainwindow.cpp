@@ -34,6 +34,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->galleryView->setResizeMode(QListView::Adjust);
     ui->galleryView->setUniformItemSizes(true);
     ui->galleryView->setSpacing(GalleryDelegate::Margin);
+    // Ensure to select something
+    connect(m_filterModel, &GalleryFilterProxyModel::modelReset, this, [this]() {
+        ui->galleryView->selectionModel()->setCurrentIndex(m_fileModel->index(0, 0),
+                                                           QItemSelectionModel::ClearAndSelect);
+    });
 
     m_progressBar = new QProgressBar(this);
     statusBar()->addPermanentWidget(m_progressBar, 1);
@@ -64,14 +69,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto goUpShortcut = new QShortcut(QKeySequence("Alt+Up"), this);
     connect(goUpShortcut, &QShortcut::activated, this, &MainWindow::goUp);
+
+    auto focusShortcut = new QShortcut(QKeySequence("Esc"), this);
+    connect(focusShortcut, &QShortcut::activated, this, [this]() { ui->galleryView->setFocus(); });
 }
 
 MainWindow::~MainWindow() { }
 
 void MainWindow::setRootPath(const QString &rootPath)
 {
+    m_rootPath = rootPath;
     m_fileModel->setRootPath(rootPath);
     ui->directoryView->setRootIndex(m_fileModel->index(rootPath));
+    ui->directoryView->selectionModel()->setCurrentIndex(ui->directoryView->rootIndex(),
+                                                         QItemSelectionModel::ClearAndSelect);
 }
 
 void MainWindow::selectDirectory(const QModelIndex &index)
@@ -116,6 +127,9 @@ void MainWindow::goUp()
 {
     QDir dir(m_galleryModel->path());
     dir.cdUp();
+    if (dir.path() == m_rootPath)
+        return;
+
     const auto index = m_fileModel->index(dir.path());
     ui->directoryView->selectionModel()->setCurrentIndex(index,
                                                          QItemSelectionModel::ClearAndSelect);
