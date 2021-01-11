@@ -30,7 +30,10 @@ private:
     QModelIndex selectedSourceIndex();
     void toggleMedia();
     void deleteMedia();
+    void cdUp();
+    void goDown();
     void goUp();
+    void navigate(int delta = 1);
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;

@@ -67,7 +67,13 @@ MainWindow::MainWindow(QWidget *parent)
     auto deleteShortcut = new QShortcut(QKeySequence(QKeySequence::Delete), this);
     connect(deleteShortcut, &QShortcut::activated, this, &MainWindow::deleteMedia);
 
-    auto goUpShortcut = new QShortcut(QKeySequence("Alt+Up"), this);
+    auto cdUpShortcut = new QShortcut(QKeySequence("Alt+Up"), this);
+    connect(cdUpShortcut, &QShortcut::activated, this, &MainWindow::cdUp);
+
+    auto goDownShortcut = new QShortcut(QKeySequence(Qt::Key_PageDown), this);
+    connect(goDownShortcut, &QShortcut::activated, this, &MainWindow::goDown);
+
+    auto goUpShortcut = new QShortcut(QKeySequence(Qt::Key_PageUp), this);
     connect(goUpShortcut, &QShortcut::activated, this, &MainWindow::goUp);
 
     auto focusShortcut = new QShortcut(QKeySequence("Esc"), this);
@@ -123,14 +129,38 @@ void MainWindow::deleteMedia()
     m_galleryModel->deleteMedia(index);
 }
 
-void MainWindow::goUp()
+void MainWindow::cdUp()
 {
     QDir dir(m_galleryModel->path());
     dir.cdUp();
-    if (dir.path() == m_rootPath)
+    if (dir.path() < m_rootPath)
         return;
 
     const auto index = m_fileModel->index(dir.path());
     ui->directoryView->selectionModel()->setCurrentIndex(index,
                                                          QItemSelectionModel::ClearAndSelect);
+}
+
+void MainWindow::goDown()
+{
+    navigate(1);
+}
+
+void MainWindow::goUp()
+{
+    navigate(-1);
+}
+
+void MainWindow::navigate(int delta)
+{
+    const auto &current = ui->directoryView->currentIndex();
+    if (!current.isValid())
+        return;
+
+    const auto index = current.sibling(current.row() + delta, 0);
+    if (index.isValid()) {
+        ui->directoryView->selectionModel()->setCurrentIndex(index,
+                                                             QItemSelectionModel::ClearAndSelect);
+        ui->directoryView->expand(ui->directoryView->currentIndex());
+    }
 }
