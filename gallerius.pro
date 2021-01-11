@@ -28,6 +28,7 @@ HEADERS += \
     src/utility.h \
 
 RESOURCES += \
+    gallerius.qrc
 
 FORMS += \
     src/mainwindow.ui

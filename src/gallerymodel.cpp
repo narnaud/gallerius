@@ -41,8 +41,13 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Qt::DisplayRole:
         return m_media.at(index.row()).fileName;
-    case Qt::DecorationRole:
-        return m_media.at(index.row()).thumbnail;
+    case Qt::DecorationRole: {
+        const auto &media = m_media.at(index.row());
+        if (media.type == Media::Dir)
+            return QPixmap(":/assets/folder-open-solid.png");
+        else
+            return media.thumbnail;
+    }
     case FilterRole:
         return m_media.at(index.row()).filter;
     case MediaRole:
@@ -117,7 +122,9 @@ static GalleryModel::Media createMedia(const QFileInfo &fileInfo, const QStringL
     static std::vector<QString> videoSuffix = {"MOV", "mov", "avi", "mp4", "webm", "ogv", "3gp"};
 
     GalleryModel::Media media;
-    if (Utility::contains(imageSuffix, fileInfo.suffix())) {
+    if (fileInfo.isDir()) {
+        media.type = GalleryModel::Media::Dir;
+    } else if (Utility::contains(imageSuffix, fileInfo.suffix())) {
         media.type = GalleryModel::Media::Image;
     } else if (Utility::contains(videoSuffix, fileInfo.suffix())) {
         media.type = GalleryModel::Media::Video;
@@ -135,7 +142,7 @@ static GalleryModel::Media createMedia(const QFileInfo &fileInfo, const QStringL
 static QVector<GalleryModel::Media> loadMedia(const QDir &dir)
 {
     const QStringList nomedia = parseNomedia(dir.path());
-    auto list = dir.entryInfoList(QDir::Files | QDir::NoDotAndDotDot, QDir::Name);
+    auto list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 
     QVector<GalleryModel::Media> result;
     result.reserve(list.size());
@@ -152,7 +159,7 @@ static QVector<GalleryModel::Media> loadMedia(const QDir &dir)
 
 static void computeThumbnail(GalleryModel::Media &media, const QString &tempPath)
 {
-    if (!media.thumbnail.isNull())
+    if (media.type == GalleryModel::Media::Dir || !media.thumbnail.isNull())
         return;
 
     if (media.type == GalleryModel::Media::Image) {

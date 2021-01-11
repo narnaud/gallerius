@@ -23,7 +23,7 @@ public:
 
     struct Media
     {
-        enum Type { Image, Video, NoType };
+        enum Type { Image, Video, Dir, NoType };
 
         QString fileName;
         QString filePath;
