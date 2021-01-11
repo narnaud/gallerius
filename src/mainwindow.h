@@ -27,7 +27,9 @@ public:
 private:
     void selectDirectory(const QModelIndex &index);
     void updateProgressBar(int value, int total);
+    QModelIndex selectedSourceIndex();
     void toggleMedia();
+    void deleteMedia();
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;

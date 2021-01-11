@@ -64,6 +64,31 @@ bool GalleryModel::setData(const QModelIndex &index, const QVariant &value, int 
     return false;
 }
 
+void GalleryModel::toggleMedia(const QModelIndex &index)
+{
+    if (index.isValid())
+        return;
+
+    const bool filtered = m_media.at(index.row()).filter;
+    setData(index, !filtered, GalleryModel::FilterRole);
+}
+
+bool GalleryModel::deleteMedia(const QModelIndex &index)
+{
+    if (!index.isValid())
+        return false;
+
+    // Note that the remove should happen inside the begin/end
+    // but that's a good enough shortcut for the current application
+    if (QFile::remove(m_media.at(index.row()).filePath)) {
+        beginRemoveRows({}, index.row(), index.row());
+        m_media.remove(index.row());
+        endRemoveRows();
+        return true;
+    }
+    return false;
+}
+
 void GalleryModel::setPath(const QString &path)
 {
     writeData();

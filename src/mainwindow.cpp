@@ -57,6 +57,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->visibilityButton->setShortcut(QKeySequence("Space"));
     connect(ui->visibilityButton, &QToolButton::clicked, this, &MainWindow::toggleMedia);
+
+    ui->deleteButton->setShortcut(QKeySequence(QKeySequence::Delete));
+    connect(ui->deleteButton, &QToolButton::clicked, this, &MainWindow::deleteMedia);
 }
 
 MainWindow::~MainWindow() { }
@@ -81,12 +84,26 @@ void MainWindow::updateProgressBar(int value, int total)
     m_progressBar->setValue(value);
 }
 
-void MainWindow::toggleMedia()
+QModelIndex MainWindow::selectedSourceIndex()
 {
     const auto index = ui->galleryView->selectionModel()->currentIndex();
     if (!index.isValid())
+        return {};
+    return m_filterModel->mapToSource(index);
+}
+
+void MainWindow::toggleMedia()
+{
+    const auto index = selectedSourceIndex();
+    if (!index.isValid())
         return;
-    const bool filtered = index.data(GalleryModel::FilterRole).toBool();
-    const auto sourceIndex = m_filterModel->mapToSource(index);
-    m_galleryModel->setData(sourceIndex, !filtered, GalleryModel::FilterRole);
+    m_galleryModel->toggleMedia(index);
+}
+
+void MainWindow::deleteMedia()
+{
+    const auto index = selectedSourceIndex();
+    if (!index.isValid())
+        return;
+    m_galleryModel->deleteMedia(index);
 }

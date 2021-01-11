@@ -39,6 +39,9 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
+    void toggleMedia(const QModelIndex &index);
+    bool deleteMedia(const QModelIndex &index);
+
     void setPath(const QString &path);
 
 signals:
