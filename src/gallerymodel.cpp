@@ -43,7 +43,7 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
         return m_media.at(index.row()).fileName;
     case Qt::DecorationRole: {
         const auto &media = m_media.at(index.row());
-        if (media.type == Media::Dir)
+        if (media.type == Dir)
             return QPixmap(":/assets/folder-open-solid.png");
         else
             return media.thumbnail;
@@ -51,7 +51,9 @@ QVariant GalleryModel::data(const QModelIndex &index, int role) const
     case FilterRole:
         return m_media.at(index.row()).filter;
     case MediaRole:
-        return m_media.at(index.row()).type;
+        return QVariant::fromValue(m_media.at(index.row()).type);
+    case FullPathRole:
+        return m_media.at(index.row()).fullPath;
     }
 
     return {};
@@ -85,7 +87,7 @@ bool GalleryModel::deleteMedia(const QModelIndex &index)
 
     // Note that the remove should happen inside the begin/end
     // but that's a good enough shortcut for the current application
-    if (QFile::remove(m_media.at(index.row()).filePath)) {
+    if (QFile::remove(m_media.at(index.row()).fullPath)) {
         beginRemoveRows({}, index.row(), index.row());
         m_media.remove(index.row());
         endRemoveRows();
@@ -101,6 +103,8 @@ QString GalleryModel::path() const
 
 void GalleryModel::setPath(const QString &path)
 {
+    if (m_path == path)
+        return;
     writeData();
     m_path = path;
     loadData();
@@ -128,17 +132,17 @@ static GalleryModel::Media createMedia(const QFileInfo &fileInfo, const QStringL
 
     GalleryModel::Media media;
     if (fileInfo.isDir()) {
-        media.type = GalleryModel::Media::Dir;
+        media.type = GalleryModel::Dir;
     } else if (Utility::contains(imageSuffix, fileInfo.suffix())) {
-        media.type = GalleryModel::Media::Image;
+        media.type = GalleryModel::Image;
     } else if (Utility::contains(videoSuffix, fileInfo.suffix())) {
-        media.type = GalleryModel::Media::Video;
+        media.type = GalleryModel::Video;
     } else {
         return media;
     }
 
     media.fileName = fileInfo.fileName();
-    media.filePath = fileInfo.absoluteFilePath();
+    media.fullPath = fileInfo.absoluteFilePath();
     media.filter = nomedia.contains(media.fileName);
 
     return media;
@@ -153,8 +157,8 @@ static QVector<GalleryModel::Media> loadMedia(const QDir &dir)
     result.reserve(list.size());
     for (const auto &info : list) {
         auto media = createMedia(info, nomedia);
-        if (media.type != GalleryModel::Media::NoType) {
-            QPixmapCache::find(media.filePath, &media.thumbnail);
+        if (media.type != GalleryModel::NoType) {
+            QPixmapCache::find(media.fullPath, &media.thumbnail);
             result.push_back(std::move(media));
         }
     }
@@ -164,19 +168,19 @@ static QVector<GalleryModel::Media> loadMedia(const QDir &dir)
 
 static void computeThumbnail(GalleryModel::Media &media, const QString &tempPath)
 {
-    if (media.type == GalleryModel::Media::Dir || !media.thumbnail.isNull())
+    if (media.type == GalleryModel::Dir || !media.thumbnail.isNull())
         return;
 
-    if (media.type == GalleryModel::Media::Image) {
-        QPixmap thumbnail(media.filePath);
+    if (media.type == GalleryModel::Image) {
+        QPixmap thumbnail(media.fullPath);
         media.thumbnail = thumbnail.scaled(GalleryModel::ThumbnailSize, GalleryModel::ThumbnailSize,
                                            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    } else if (media.type == GalleryModel::Media::Video) {
+    } else if (media.type == GalleryModel::Video) {
         const QString outName = tempPath + '/' + media.fileName + ".jpg";
         if (!QFile::exists(outName)) {
             int code =
                 QProcess::execute(QString("ffmpeg -loglevel quiet -i \"%1\" -vframes 1 \"%2\"")
-                                      .arg(media.filePath)
+                                      .arg(media.fullPath)
                                       .arg(QDir::toNativeSeparators(outName)));
             if (code != 0)
                 return;

@@ -25,7 +25,6 @@ public:
     void setRootPath(const QString &rootPath);
 
 private:
-    void selectDirectory(const QModelIndex &index);
     void updateProgressBar(int value, int total);
     QModelIndex selectedSourceIndex();
     void toggleMedia();
@@ -34,6 +33,8 @@ private:
     void goDown();
     void goUp();
     void navigate(int delta = 1);
+    void doAction(const QModelIndex &index);
+    void openPath(const QString &path);
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;

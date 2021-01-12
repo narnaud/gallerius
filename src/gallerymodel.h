@@ -19,14 +19,15 @@ public:
     enum Roles {
         FilterRole = Qt::UserRole + 1,
         MediaRole,
+        FullPathRole,
     };
+    enum Type { Image, Video, Dir, NoType };
+    Q_ENUM(Type);
 
     struct Media
     {
-        enum Type { Image, Video, Dir, NoType };
-
         QString fileName;
-        QString filePath;
+        QString fullPath;
         QPixmap thumbnail;
         Type type = NoType;
         bool filter = false;

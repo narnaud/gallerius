@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->directoryView->hideColumn(2);
     ui->directoryView->hideColumn(3);
     connect(ui->directoryView->selectionModel(), &QItemSelectionModel::currentChanged, this,
-            &MainWindow::selectDirectory);
+            [this](const QModelIndex &index) { openPath(m_fileModel->filePath(index)); });
 
     m_filterModel = new GalleryFilterProxyModel(this);
     m_filterModel->setSourceModel(m_galleryModel);
@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->galleryView->setSpacing(GalleryDelegate::Margin);
     // Ensure to select something
     connect(m_filterModel, &GalleryFilterProxyModel::modelReset, this, [this]() {
-        ui->galleryView->selectionModel()->setCurrentIndex(m_fileModel->index(0, 0),
+        ui->galleryView->selectionModel()->setCurrentIndex(m_filterModel->index(0, 0),
                                                            QItemSelectionModel::ClearAndSelect);
     });
 
@@ -78,6 +78,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto focusShortcut = new QShortcut(QKeySequence("Esc"), this);
     connect(focusShortcut, &QShortcut::activated, this, [this]() { ui->galleryView->setFocus(); });
+
+    auto actionShortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    connect(actionShortcut, &QShortcut::activated, this,
+            [this]() { doAction(ui->galleryView->currentIndex()); });
+    connect(ui->galleryView, &QListView::doubleClicked, this, &MainWindow::doAction);
 }
 
 MainWindow::~MainWindow() { }
@@ -89,12 +94,6 @@ void MainWindow::setRootPath(const QString &rootPath)
     ui->directoryView->setRootIndex(m_fileModel->index(rootPath));
     ui->directoryView->selectionModel()->setCurrentIndex(ui->directoryView->rootIndex(),
                                                          QItemSelectionModel::ClearAndSelect);
-}
-
-void MainWindow::selectDirectory(const QModelIndex &index)
-{
-    const QString &path = m_fileModel->filePath(index);
-    m_galleryModel->setPath(path);
 }
 
 void MainWindow::updateProgressBar(int value, int total)
@@ -161,6 +160,22 @@ void MainWindow::navigate(int delta)
     if (index.isValid()) {
         ui->directoryView->selectionModel()->setCurrentIndex(index,
                                                              QItemSelectionModel::ClearAndSelect);
-        ui->directoryView->expand(ui->directoryView->currentIndex());
+        ui->directoryView->expand(ui->directoryView->currentIndex().parent());
     }
+}
+
+void MainWindow::doAction(const QModelIndex &index)
+{
+    Q_ASSERT(index.isValid());
+
+    auto type = index.data(GalleryModel::MediaRole).value<GalleryModel::Type>();
+    if (type == GalleryModel::Dir)
+        openPath(index.data(GalleryModel::FullPathRole).toString());
+}
+
+void MainWindow::openPath(const QString &path)
+{
+    m_galleryModel->setPath(path);
+    ui->directoryView->setCurrentIndex(m_fileModel->index(path));
+    ui->directoryView->expand(ui->directoryView->currentIndex().parent());
 }

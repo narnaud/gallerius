@@ -20,8 +20,7 @@ void GalleryDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     const bool filter = index.data(GalleryModel::FilterRole).toBool();
     const QString &text = index.data().toString();
     const QPixmap &pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
-    const auto role =
-        static_cast<GalleryModel::Media::Type>(index.data(GalleryModel::MediaRole).toInt());
+    const auto role = index.data(GalleryModel::MediaRole).value<GalleryModel::Type>();
 
     QColor color = filter ? (selected ? QColor(Qt::magenta).lighter() : QColor(Qt::red).lighter())
                           : (selected ? QColor(Qt::blue).lighter() : Qt::lightGray);
@@ -34,7 +33,7 @@ void GalleryDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
         painter->drawPixmap(rect, pixmap);
 
         // Draw movie ribbon on the left and right
-        if (role == GalleryModel::Media::Video) {
+        if (role == GalleryModel::Video) {
             painter->fillRect(QRect {rect.left(), rect.top(), MovieRadius + 4, rect.height()},
                               Qt::darkGray);
             painter->fillRect(
