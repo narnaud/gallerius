@@ -4,6 +4,8 @@
 #include <QWidget>
 
 class QAbstractItemModel;
+class QStackedWidget;
+class ImageView;
 
 class MediaView : public QWidget
 {
@@ -20,7 +22,8 @@ protected:
 private:
     const QAbstractItemModel *m_model;
     int m_row = -1;
-    QPixmap m_pixmap;
+    ImageView *m_imageView = nullptr;
+    QStackedWidget *m_stack = nullptr;
 };
 
 #endif // MEDIAVIEW_H
