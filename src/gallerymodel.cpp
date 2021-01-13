@@ -73,7 +73,7 @@ bool GalleryModel::setData(const QModelIndex &index, const QVariant &value, int 
 
 void GalleryModel::toggleMedia(const QModelIndex &index)
 {
-    if (index.isValid())
+    if (!index.isValid())
         return;
 
     const bool filtered = m_media.at(index.row()).filter;
