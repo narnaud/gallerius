@@ -6,6 +6,7 @@
 class QAbstractItemModel;
 class QStackedWidget;
 class ImageView;
+class VideoView;
 
 class MediaView : public QWidget
 {
@@ -18,11 +19,13 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
 private:
     const QAbstractItemModel *m_model;
     int m_row = -1;
     ImageView *m_imageView = nullptr;
+    VideoView *m_videoView = nullptr;
     QStackedWidget *m_stack = nullptr;
 };
 
