@@ -18,6 +18,7 @@ SOURCES += \
     src/gallerymodel.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
+    src/mediaview.cpp
 
 HEADERS += \
     src/constants.h \
@@ -25,6 +26,7 @@ HEADERS += \
     src/galleryfilterproxymodel.h \
     src/gallerymodel.h \
     src/mainwindow.h \
+    src/mediaview.h \
     src/utility.h \
 
 RESOURCES += \

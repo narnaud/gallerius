@@ -4,6 +4,7 @@
 #include "gallerydelegate.h"
 #include "galleryfilterproxymodel.h"
 #include "gallerymodel.h"
+#include "mediaview.h"
 
 #include <QFileSystemModel>
 #include <QProgressBar>
@@ -14,9 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , m_fileModel(new QFileSystemModel(this))
     , m_galleryModel(new GalleryModel(this))
+    , m_mediaView(new MediaView(m_galleryModel, this))
 {
     ui->setupUi(this);
     menuBar()->hide();
+    m_mediaView->hide();
 
     m_fileModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
     ui->directoryView->setModel(m_fileModel);
@@ -36,9 +39,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->galleryView->setSpacing(GalleryDelegate::Margin);
     // Ensure to select something
     connect(m_filterModel, &GalleryFilterProxyModel::modelReset, this, [this]() {
+        m_mediaView->hide();
         ui->galleryView->selectionModel()->setCurrentIndex(m_filterModel->index(0, 0),
                                                            QItemSelectionModel::ClearAndSelect);
     });
+    // Connection for the media view
+    connect(ui->galleryView->selectionModel(), &QItemSelectionModel::currentChanged, m_mediaView,
+            &MediaView::setCurrentIndex);
+    connect(m_filterModel, &GalleryFilterProxyModel::dataChanged, m_mediaView,
+            qOverload<>(&MediaView::update));
 
     m_progressBar = new QProgressBar(this);
     statusBar()->addPermanentWidget(m_progressBar, 1);
@@ -77,7 +86,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(goUpShortcut, &QShortcut::activated, this, &MainWindow::goUp);
 
     auto focusShortcut = new QShortcut(QKeySequence("Esc"), this);
-    connect(focusShortcut, &QShortcut::activated, this, [this]() { ui->galleryView->setFocus(); });
+    connect(focusShortcut, &QShortcut::activated, this, [this]() {
+        ui->galleryView->setFocus();
+        m_mediaView->hide();
+    });
 
     auto actionShortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
     connect(actionShortcut, &QShortcut::activated, this,
@@ -94,6 +106,12 @@ void MainWindow::setRootPath(const QString &rootPath)
     ui->directoryView->setRootIndex(m_fileModel->index(rootPath));
     ui->directoryView->selectionModel()->setCurrentIndex(ui->directoryView->rootIndex(),
                                                          QItemSelectionModel::ClearAndSelect);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    m_mediaView->setGeometry(0, 0, width(), height());
+    QMainWindow::resizeEvent(event);
 }
 
 void MainWindow::updateProgressBar(int value, int total)
@@ -169,8 +187,12 @@ void MainWindow::doAction(const QModelIndex &index)
     Q_ASSERT(index.isValid());
 
     auto type = index.data(GalleryModel::MediaRole).value<GalleryModel::Type>();
-    if (type == GalleryModel::Dir)
+    if (type == GalleryModel::Dir) {
         openPath(index.data(GalleryModel::FullPathRole).toString());
+    } else {
+        m_mediaView->show();
+        m_mediaView->raise();
+    }
 }
 
 void MainWindow::openPath(const QString &path)

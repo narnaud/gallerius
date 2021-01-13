@@ -9,6 +9,7 @@ class GalleryModel;
 class GalleryFilterProxyModel;
 class QFileSystemModel;
 class QProgressBar;
+class MediaView;
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +24,9 @@ public:
     ~MainWindow();
 
     void setRootPath(const QString &rootPath);
+
+protected:
+    void resizeEvent(QResizeEvent *event);
 
 private:
     void updateProgressBar(int value, int total);
@@ -43,6 +47,7 @@ private:
     GalleryFilterProxyModel *m_filterModel = nullptr;
     QProgressBar *m_progressBar = nullptr;
     QString m_rootPath;
+    MediaView *m_mediaView;
 };
 
 #endif // MAINWINDOW_H
