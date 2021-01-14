@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QMediaPlayer>
 #include <QPainter>
+#include <QProcess>
 #include <QSlider>
 #include <QStackedWidget>
 #include <QStyle>
@@ -68,14 +69,20 @@ public:
 
         m_player = new QMediaPlayer(this);
 
+        auto createToolButton = [this](const QString &shortcut, QStyle::StandardPixmap icon) {
+            auto button = new QToolButton;
+            button->setFocusPolicy(Qt::NoFocus);
+            button->setShortcut(QKeySequence(shortcut));
+            button->setIcon(style()->standardIcon(icon));
+            return button;
+        };
+
         auto video = new QVideoWidget;
         video->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         m_player->setVideoOutput(video);
         grid->addWidget(video, 0, 0, 1, 3);
-        m_playButton = new QToolButton;
-        m_playButton->setFocusPolicy(Qt::NoFocus);
-        m_playButton->setShortcut(QKeySequence("P"));
-        m_playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+
+        m_playButton = createToolButton("P", QStyle::SP_MediaPlay);
         grid->addWidget(m_playButton, 1, 0);
         m_slider = new QSlider(Qt::Horizontal);
         m_slider->setFocusPolicy(Qt::NoFocus);
@@ -84,15 +91,42 @@ public:
         m_label = new QLabel;
         grid->addWidget(m_label, 1, 2);
 
+        auto cutLayout = new QHBoxLayout;
+        grid->addLayout(cutLayout, 2, 1);
+        auto fromButton = createToolButton("Alt+Left", QStyle::SP_MediaSeekForward);
+        cutLayout->addWidget(fromButton);
+        m_from = new QLabel;
+        cutLayout->addWidget(m_from);
+        cutLayout->addStretch(1);
+        auto saveButton = createToolButton("Ctrl+S", QStyle::SP_DialogSaveButton);
+        cutLayout->addWidget(saveButton);
+        cutLayout->addStretch(1);
+        m_to = new QLabel;
+        cutLayout->addWidget(m_to);
+        auto toButton = createToolButton("Alt+Right", QStyle::SP_MediaSeekBackward);
+        cutLayout->addWidget(toButton);
+
         connect(m_player, &QMediaPlayer::durationChanged, this, &VideoView::durationChanged);
         connect(m_player, &QMediaPlayer::positionChanged, this, &VideoView::positionChanged);
         connect(m_player, &QMediaPlayer::stateChanged, this, &VideoView::setState);
         connect(m_slider, &QSlider::sliderMoved, this,
                 [this](int seconds) { m_player->setPosition(seconds * 1000); });
         connect(m_playButton, &QAbstractButton::clicked, this, &VideoView::playClicked);
+        connect(fromButton, &QToolButton::clicked, this, [this]() {
+            m_from->setText(QString::number(double(m_player->position()) / 1000));
+        });
+        connect(saveButton, &QToolButton::clicked, this, &VideoView::save);
+        connect(toButton, &QToolButton::clicked, this,
+                [this]() { m_to->setText(QString::number(double(m_player->position()) / 1000)); });
     }
 
-    void setPath(const QString &path) { m_player->setMedia(QMediaContent(path)); }
+    void setPath(const QString &path)
+    {
+        m_path = path;
+        m_from->clear();
+        m_to->clear();
+        m_player->setMedia(QMediaContent(path));
+    }
 
     void play() { m_player->play(); }
 
@@ -148,6 +182,38 @@ private:
             break;
         }
     }
+    void save()
+    {
+        m_player->stop();
+        m_player->setMedia({});
+        if (m_from->text().isEmpty() && m_to->text().isEmpty())
+            return;
+        QFileInfo fi(m_path);
+        const QString tmpFile =
+            fi.absolutePath() + "/" + fi.baseName() + "-tmp." + fi.completeSuffix();
+        if (m_from->text().isEmpty()) {
+            QProcess::execute(QString("ffmpeg -i \"%1\" -to %2 -c copy -y \"%3\"")
+                                  .arg(QDir::toNativeSeparators(m_path))
+                                  .arg(m_to->text())
+                                  .arg(QDir::toNativeSeparators(tmpFile)));
+        } else if (m_to->text().isEmpty()) {
+            QProcess::execute(QString("ffmpeg -i \"%1\" -ss %2 -c copy -y \"%3\"")
+                                  .arg(QDir::toNativeSeparators(m_path))
+                                  .arg(m_from->text())
+                                  .arg(QDir::toNativeSeparators(tmpFile)));
+        } else {
+            QProcess::execute(QString("ffmpeg -i \"%1\" -ss %2 -to %3 -c copy -y \"%4\"")
+                                  .arg(QDir::toNativeSeparators(m_path))
+                                  .arg(m_from->text())
+                                  .arg(m_to->text())
+                                  .arg(QDir::toNativeSeparators(tmpFile)));
+        }
+        if (QFile::exists(tmpFile)) {
+            QFile::remove(m_path);
+            QFile::rename(tmpFile, m_path);
+        }
+        setPath(m_path);
+    }
 
 private:
     QMediaPlayer *m_player;
@@ -155,6 +221,9 @@ private:
     QLabel *m_label;
     qint64 m_duration = 0;
     QToolButton *m_playButton;
+    QLabel *m_from;
+    QLabel *m_to;
+    QString m_path;
 };
 
 MediaView::MediaView(QAbstractItemModel *model, QWidget *parent)
