@@ -49,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
             qOverload<>(&MediaView::update));
 
     connect(m_galleryModel, &GalleryModel::titleChanged, ui->titleEdit, &QLineEdit::setText);
+    connect(ui->titleEdit, &QLineEdit::editingFinished, m_galleryModel,
+            [this]() { m_galleryModel->setTitle(ui->titleEdit->text()); });
 
     connect(m_galleryModel, &GalleryModel::progressChanged, this, &MainWindow::updateProgressBar);
     ui->progressBar->hide();

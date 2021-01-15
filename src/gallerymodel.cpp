@@ -120,8 +120,37 @@ void GalleryModel::setTitle(const QString &title)
     if (m_title == title)
         return;
 
+    // Empty case
+    if (m_title.isEmpty()) {
+        QFileInfo fi(m_path);
+        m_title = fi.baseName();
+    }
+
     m_title = title;
     emit titleChanged(title);
+
+    // Save in index.md
+    QFile indexFile(m_path + "/index.md");
+    QString text;
+    bool titleReplaced = false;
+    if (indexFile.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&indexFile);
+        while (!stream.atEnd()) {
+            auto line = stream.readLine().simplified();
+            if (line.startsWith("title:")) {
+                titleReplaced = true;
+                text.append(QString("title: %1\n").arg(m_title));
+            } else {
+                text.append(line + "\n");
+            }
+        }
+        indexFile.close();
+    }
+    if (!titleReplaced)
+        text.prepend(QString("title: %1\n").arg(m_title));
+
+    if (indexFile.open(QIODevice::WriteOnly | QFile::Truncate))
+        indexFile.write(text.toUtf8());
 }
 
 static QStringList parseNomedia(const QString &path)
@@ -226,8 +255,8 @@ void GalleryModel::loadData()
     m_watcher->cancel();
     m_watcher->waitForFinished();
 
-    const QString title = parseTitle(m_path);
-    setTitle(title);
+    m_title = parseTitle(m_path);
+    emit titleChanged(m_title);
 
     auto data = loadMedia(m_path);
 
