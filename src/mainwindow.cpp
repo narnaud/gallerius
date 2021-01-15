@@ -11,14 +11,13 @@
 #include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QWidget(parent)
     , ui(new Ui::MainWindow)
     , m_fileModel(new QFileSystemModel(this))
     , m_galleryModel(new GalleryModel(this))
     , m_mediaView(new MediaView(m_galleryModel, this))
 {
     ui->setupUi(this);
-    menuBar()->hide();
     m_mediaView->hide();
 
     m_fileModel->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -49,10 +48,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_filterModel, &GalleryFilterProxyModel::dataChanged, m_mediaView,
             qOverload<>(&MediaView::update));
 
-    m_progressBar = new QProgressBar(this);
-    statusBar()->addPermanentWidget(m_progressBar, 1);
     connect(m_galleryModel, &GalleryModel::progressChanged, this, &MainWindow::updateProgressBar);
-    m_progressBar->hide();
+    ui->progressBar->hide();
 
     ui->allButton->setShortcut(QKeySequence("1"));
     connect(ui->allButton, &QToolButton::toggled, this, [this](bool checked) {
@@ -111,15 +108,15 @@ void MainWindow::setRootPath(const QString &rootPath)
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     m_mediaView->setGeometry(0, 0, width(), height());
-    QMainWindow::resizeEvent(event);
+    QWidget::resizeEvent(event);
 }
 
 void MainWindow::updateProgressBar(int value, int total)
 {
     const bool hide = total != 0 && value != total;
-    m_progressBar->setVisible(hide);
-    m_progressBar->setMaximum(total);
-    m_progressBar->setValue(value);
+    ui->progressBar->setVisible(hide);
+    ui->progressBar->setMaximum(total);
+    ui->progressBar->setValue(value);
 }
 
 QModelIndex MainWindow::selectedSourceIndex()
