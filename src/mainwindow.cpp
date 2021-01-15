@@ -48,6 +48,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_filterModel, &GalleryFilterProxyModel::dataChanged, m_mediaView,
             qOverload<>(&MediaView::update));
 
+    connect(m_galleryModel, &GalleryModel::titleChanged, ui->titleEdit, &QLineEdit::setText);
+
     connect(m_galleryModel, &GalleryModel::progressChanged, this, &MainWindow::updateProgressBar);
     ui->progressBar->hide();
 

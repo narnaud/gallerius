@@ -110,6 +110,20 @@ void GalleryModel::setPath(const QString &path)
     loadData();
 }
 
+QString GalleryModel::title() const
+{
+    return m_title;
+}
+
+void GalleryModel::setTitle(const QString &title)
+{
+    if (m_title == title)
+        return;
+
+    m_title = title;
+    emit titleChanged(title);
+}
+
 static QStringList parseNomedia(const QString &path)
 {
     QFile nomediaFile(path + "/.nomedia");
@@ -123,6 +137,21 @@ static QStringList parseNomedia(const QString &path)
         }
     }
     return result;
+}
+
+static QString parseTitle(const QString &path)
+{
+    QFile indexFile(path + "/index.md");
+    if (indexFile.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&indexFile);
+        while (!stream.atEnd()) {
+            auto line = stream.readLine().simplified();
+            if (line.startsWith("title:"))
+                return line.remove("title:").simplified();
+        }
+    }
+    QFileInfo fi(path);
+    return fi.baseName();
 }
 
 static GalleryModel::Media createMedia(const QFileInfo &fileInfo, const QStringList &nomedia)
@@ -196,6 +225,9 @@ void GalleryModel::loadData()
 {
     m_watcher->cancel();
     m_watcher->waitForFinished();
+
+    const QString title = parseTitle(m_path);
+    setTitle(title);
 
     auto data = loadMedia(m_path);
 

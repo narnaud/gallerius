@@ -46,8 +46,12 @@ public:
     QString path() const;
     void setPath(const QString &path);
 
+    QString title() const;
+    void setTitle(const QString &title);
+
 signals:
     void progressChanged(int progressValue, int total);
+    void titleChanged(const QString &title);
 
 private:
     void loadData();
@@ -56,6 +60,7 @@ private:
 private:
     bool m_hasChanged = false;
     QString m_path;
+    QString m_title;
     QVector<Media> m_media;
 
     QFutureWatcher<void> *m_watcher;
