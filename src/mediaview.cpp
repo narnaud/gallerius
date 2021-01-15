@@ -122,6 +122,7 @@ public:
 
     void setPath(const QString &path)
     {
+        m_player->stop();
         m_path = path;
         m_from->clear();
         m_to->clear();
@@ -255,6 +256,7 @@ void MediaView::setCurrentIndex(const QModelIndex &index)
     if (type == GalleryModel::Image) {
         m_imageView->setPath(fullPath);
         m_stack->setCurrentWidget(m_imageView);
+        m_videoView->setPath("");
     } else if (type == GalleryModel::Video) {
         m_videoView->setPath(fullPath);
         m_stack->setCurrentWidget(m_videoView);
